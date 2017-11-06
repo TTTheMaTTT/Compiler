@@ -3,14 +3,29 @@
 %code requires 
 {
 #include "GrammarDeclarations.h"
-#include "shit.h"
+#include "Symbol.h"
 }
 
 %{
+/*
+ToDo: позаботиться о нормальном выделении и освобождении памяти
+
+*/
 #include <stdio.h>
-#include <string.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+#include "Symbol.h"
+extern Symbol* getIntern(const string& src);
+#include "Table.h"
+#include "GrammarDeclarations.h"
+#include "Visitor.h"
 #include "GrammarDescriptions.h"
+#include "VarTableCreator.h"
 
 using namespace std;
 
@@ -27,44 +42,17 @@ extern FILE * yyin;
 // just the parser, the parse
 extern int yyparse();
 
-
-void yyerror(const char *str)
-{
-	fprintf(stderr, "ошибка: %s\n", str);
-	system("pause");//Не сразу закрываем консоль
-}
-
-int yywrap()
-{
-	/*
-	yyin=fopen("file.txt", "r");
-	return 0;
-	fclose(yyin);
-	*/
-	return 1;
-}
-
-Printer p;
+VarTableCreator v;
 const Program* prog;
-
-//int AddedExpList::count;
-//int BinopExp::count;
-
-int main()
-{
-	setlocale(LC_ALL, "rus"); // корректное отображение Кириллицы
-	yyin=fopen("file.txt", "r");
-	yyparse();
-	fclose(yyin);
-	p.visit(prog);
-	system("pause");//Не сразу закрываем консоль
-	return 0;
-}
 
 %}
 
+%locations
+
 %union {
 	int Int;
+	const Symbol* Symbol;//Символ
+	const IType* Type;//Тип объектов
 	const Program* Program;
 	const IMainClass* MainClass;
 	const IClassDeclarationList* ClassDeclarationList;
@@ -86,7 +74,7 @@ int main()
 %token MOD MULTIPLY MINUS PLUS ASSIGN
 %token EOFL STRINGWORD BOOLWORD INTWORD CLASSWORD NEWWORD THISWORD PUBLICWORD PRIVATEWORD STATICWORD VOIDWORD RETURNWORD MAINWORD 
 %token EXTENSIONWORD PRINTWORD LENGTHWORD TRUE FALSE
-%token IDENTIFIER 
+%token <Symbol> IDENTIFIER 
 %token <Int> NUM
 
 %type <Program> Goal
@@ -102,6 +90,7 @@ int main()
 %type <Statement> Statement
 %type <ExpList> ExpressionList
 %type <Exp> Expression
+%type <Type> Type
 
 %%
 
@@ -118,12 +107,12 @@ ClassDeclarationList:
 MainClass:
 	CLASSWORD IDENTIFIER FOBRACE 
 		PUBLICWORD STATICWORD VOIDWORD MAINWORD OBRACE STRINGWORD SQOBRACE SQEBRACE IDENTIFIER EBRACE FOBRACE 
-			Statement FEBRACE FEBRACE {$$=new IMainClass($15);}
+			Statement FEBRACE FEBRACE {$$=new IMainClass($2,$12,$15);}
 	;
 
 ClassDeclaration:
 	CLASSWORD IDENTIFIER Extension FOBRACE VarDeclarationList MethodDeclarationList FEBRACE 
-	{$$=new IClassDeclaration($5,$6);}
+	{$$=new IClassDeclaration($2,$5,$6);}
 	;
 
 Extension:
@@ -138,7 +127,7 @@ VarDeclarationList:
 	;	
 
 VarDeclaration:
-	Type IDENTIFIER SEMICOLON {$$=new IVarDeclaration();}
+	Type IDENTIFIER SEMICOLON {$$=new IVarDeclaration($1,$2);}
 	;
 
 MethodDeclarationList:
@@ -150,7 +139,7 @@ MethodDeclarationList:
 MethodDeclaration:
 	ScopeAttribute Type IDENTIFIER OBRACE ArgumentList EBRACE
 		FOBRACE VarDeclarationList StatementList RETURNWORD Expression SEMICOLON FEBRACE 
-	{$$=new IMethodDeclaration($5,$8,$9,$11);}
+	{$$=new IMethodDeclaration($2,$3,$5,$8,$9,$11);}
 	;
 
 ScopeAttribute:
@@ -160,21 +149,21 @@ ScopeAttribute:
 	;
 
 ArgumentList:
-	Type IDENTIFIER COMMA ArgumentList {$$=new AddArgumentList($4);}
+	Type IDENTIFIER COMMA ArgumentList {$$=new AddArgumentList($1,$2,$4);}
 	|
-	Type IDENTIFIER {$$=new OnlyArgumentList();}
+	Type IDENTIFIER {$$=new OnlyArgumentList($1,$2);}
 	|
 	{$$=new ZeroArgumentList();}
 	;
 
 Type:
-	INTWORD SQOBRACE SQEBRACE
+	INTWORD SQOBRACE SQEBRACE {$$=new IType(getIntern("array of int"));}
 	|
-	BOOLWORD
+	BOOLWORD {$$=new IType(getIntern("bool"));}
 	|
-	INTWORD
+	INTWORD {$$=new IType(getIntern("int"));}
 	|
-	IDENTIFIER
+	IDENTIFIER {$$=new IType($1);}
 	;
 
 StatementList:
@@ -192,9 +181,9 @@ Statement:
 	|
 	PRINTWORD OBRACE Expression EBRACE SEMICOLON {$$=new PrintStatement($3);}
 	|
-	IDENTIFIER ASSIGN Expression SEMICOLON {$$=new AssignStatement($3);}
+	IDENTIFIER ASSIGN Expression SEMICOLON {$$=new AssignStatement($1,$3);}
 	|
-	IDENTIFIER SQOBRACE Expression SQEBRACE ASSIGN Expression SEMICOLON {$$=new AssignArrayElementStatement($3,$6);}
+	IDENTIFIER SQOBRACE Expression SQEBRACE ASSIGN Expression SEMICOLON {$$=new AssignArrayElementStatement($1,$3,$6);}
 	;
 
 ExpressionList:
@@ -212,7 +201,7 @@ Expression:
 	|
 	Expression DOT LENGTHWORD {$$=new GetLengthExp($1);}
 	|
-	Expression DOT IDENTIFIER OBRACE ExpressionList EBRACE {$$=new MethodExp($1,$5);}
+	Expression DOT IDENTIFIER OBRACE ExpressionList EBRACE {$$=new MethodExp($1,$3,$5);}
 	|
 	NUM {$$=new NumExp($1);}
 	|
@@ -220,13 +209,13 @@ Expression:
 	|
 	FALSE {$$=new BoolExp(false);}
 	|
-	IDENTIFIER {$$=new IDExp();}
+	IDENTIFIER {$$=new IDExp($1);}
 	|
 	THISWORD {$$=new ThisExp();}
 	|
 	NEWWORD INTWORD SQOBRACE Expression SQEBRACE {$$=new GetArrayExp($4);}
 	|
-	NEWWORD IDENTIFIER OBRACE EBRACE {$$=new NewObjectExp();}
+	NEWWORD IDENTIFIER OBRACE EBRACE {$$=new NewObjectExp($2);}
 	|
 	NOT Expression {$$=new NegativeExp($2);}
 	|
@@ -252,3 +241,10 @@ BinOp:
 	;
 
 %%
+
+// we have to code this function
+void yyerror(const char* msg)
+{
+	fprintf(stderr, "ошибка: [%d,%d] - %s\n",yylloc.first_line, yylloc.first_column, msg);
+	system("pause");//Не сразу закрываем консоль
+}

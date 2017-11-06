@@ -1,0 +1,140 @@
+Goal: 
+	MainClass EOFL {printf("Goal Achieved");}
+	|
+	MainClass ClassDeclarationList EOFL {printf("Goal Achieved");}
+	;
+
+ClassDeclarationList: {printf ("begin Class Declarations\n");}
+	|
+	ClassDeclarationList ClassDeclaration {cout<<"Add Class "<<classCount-1<<endl;}
+	;
+
+MainClass:
+	CLASSWORD IDENTIFIER FOBRACE 
+		PUBLICWORD STATICWORD VOIDWORD MAINWORD OBRACE STRINGWORD SQOBRACE SQEBRACE IDENTIFIER EBRACE FOBRACE 
+			Statement FEBRACE FEBRACE {cout<<"Create Main Class"<<endl;}
+	;
+
+ClassDeclaration:
+	CLASSWORD IDENTIFIER Extension FOBRACE VarDeclarationList MethodDeclarationList FEBRACE 
+	{cout<<"Create class "<<classCount++<<endl;}
+	;
+
+Extension: {printf("No Extension\n");}
+	|
+	EXTENSIONWORD IDENTIFIER {cout<<"Have Extension "<<$2<<endl;}
+	;
+
+VarDeclarationList:{printf ("Start Var Declarations\n");}
+	|
+	VarDeclarationList VarDeclaration {cout<<"Add Variable "<<varCount-1<<endl;}
+	;	
+
+MethodDeclarationList:{printf ("Start Methods Declaration\n");}
+	|
+	MethodDeclarationList MethodDeclaration {cout<<"Add Method "<<methodCount-1<<endl;}
+	;
+
+VarDeclaration:
+	Type IDENTIFIER SEMICOLON {cout<<"Create variable "<<varCount<<endl;varCount++;}
+	;
+
+MethodDeclaration:
+	ScopeAttribute Type IDENTIFIER OBRACE ArgumentsList EBRACE
+		FOBRACE VarDeclarationList StatementList RETURNWORD Expression SEMICOLON FEBRACE 
+	{cout<<"Create method "<<methodCount<<endl; methodCount++;}
+	;
+
+ScopeAttribute:
+	PUBLICWORD {printf ("make public\n");}
+	|
+	PRIVATEWORD {printf ("make private\n");}
+	;
+
+ArgumentsList:
+	Type IDENTIFIER {cout<<"Start arguments List with argument"<<argumentCount<<endl;argumentCount++;}
+	|
+	Type IDENTIFIER COMMA ArgumentsList {cout<<"Add argument "<<argumentCount<<endl;argumentCount++;}
+	;
+
+StatementList:{cout<<"Start Statements list"<<endl;}
+	|
+	StatementList Statement {cout<<"Add Statement"<<statementCount-1<<endl;}
+	;
+
+Type:
+	INTWORD SQOBRACE SQEBRACE {printf ("type int array");}
+	|
+	BOOLWORD {printf ("type bool ");}
+	|
+	INTWORD {printf ("type int ");}
+	|
+	IDENTIFIER {printf ("user type ");}
+	;
+
+Statement:
+	FOBRACE StatementList FEBRACE {cout<<"Compound Statement "<<statementCount<<endl; statementCount++;}
+	|
+	IFWORD OBRACE Expression EBRACE Statement ELSEWORD Statement 
+	{cout<<"Conditional Statement "<<statementCount<<endl; statementCount++;}
+	|
+	WHILEWORD OBRACE Expression EBRACE Statement {cout<<"Cycle Statement "<<statementCount<<endl; statementCount++;}
+	|
+	PRINTWORD OBRACE Expression EBRACE SEMICOLON {cout<<"Print Statement "<<statementCount<<endl; statementCount++;}
+	|
+	IDENTIFIER ASSIGN Expression SEMICOLON {cout<<"Assign Statement "<<statementCount<<endl; statementCount++;}
+	|
+	IDENTIFIER SQOBRACE Expression SQEBRACE ASSIGN Expression SEMICOLON
+	{cout<<"Assign array element Statement "<<statementCount<<endl; statementCount++;}
+	;
+
+ExpressionList:
+	Expression {cout<<"Start Expression List with Expression "<<expressionCount<<endl;}
+	|
+	Expression COMMA ExpressionList {cout<<"Add Expression "<<expressionCount<<endl;}
+	;
+
+Expression:
+	Expression BinOp Expression {cout<<"Binop Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	Expression SQOBRACE Expression SQEBRACE {cout<<"Get Array Element Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	Expression DOT LENGTHWORD {cout<<"Get Length Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	Expression DOT IDENTIFIER OBRACE ExpressionList EBRACE {cout<<"Method Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	NUM {cout<<"Num Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	TRUE {cout<<"True Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	FALSE {cout<<"False Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	IDENTIFIER {cout<<"Identifier Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	THISWORD {cout<<"This Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	NEWWORD INTWORD SQOBRACE Expression SQEBRACE {cout<<"Get Array Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	NEWWORD IDENTIFIER OBRACE EBRACE {cout<<"Create Object Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	NOT Expression {cout<<"Negative Expression "<<expressionCount<<endl; expressionCount++;}
+	|
+	OBRACE Expression EBRACE {cout<<"Enclosed Expression "<<expressionCount<<endl; expressionCount++;}
+
+BinOp:
+	AND {printf("And ");}
+	| 
+	LESS {printf("Less ");}
+	| 
+	GREATER {printf("Greater ");}
+	| 
+	PLUS {printf("Plus ");}
+	| 
+	MINUS {printf("Minus ");}
+	| 
+	MULTIPLY {printf("Multiply ");}
+	| 
+	MOD {printf("Mod ");}
+	| 
+	OR {printf("Or ");}
+	;

@@ -1,3 +1,6 @@
+#include <string>
+using namespace std;
+
 class Program;
 class IMainClass;
 class IClassDeclarationList;

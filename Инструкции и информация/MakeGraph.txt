@@ -1,0 +1,1 @@
+dot -Tpng graph.dot -o tree.png

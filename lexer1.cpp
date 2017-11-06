@@ -639,7 +639,14 @@ char *yytext;
 #include <stdio.h>
 #include <iostream>
 #include "parser.h"
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 using namespace std;
+
+#include "Symbol.h"
+#include "Table.h"
 
 struct Location 
 {
@@ -649,16 +656,32 @@ struct Location
 int wordsNum=0;
 bool eofRead=false;
 
+//»нтернирование строк в указатели на объект класса Symbol
+Symbol* getIntern(const string& src)
+{
+	static unordered_map<string, Symbol*> allStrings;
+	auto cached = allStrings.find(src);
+	if (cached != allStrings.end()) {
+		return cached->second;
+	}
+	Symbol* newVal = new Symbol(src);
+	allStrings.insert({ src, newVal });
+	return newVal;
+}
+
 void action(int yyact, int yyleng)
 {
 	//if (yyact>24)
 		//return;
 	//cout<<"("<<location.line<<", "<<location.symbolBegin<<")";
 	location.symbolBegin+=yyleng;
+	yylloc.first_line = location.line;
+	yylloc.first_column = location.symbolBegin;
+
 }
 
-#line 660 "lexer1.cpp"
-#line 661 "lexer1.cpp"
+#line 683 "lexer1.cpp"
+#line 684 "lexer1.cpp"
 
 #define INITIAL 0
 
@@ -875,10 +898,10 @@ YY_DECL
 		}
 
 	{
-#line 29 "lexer1.l"
+#line 52 "lexer1.l"
 
 
-#line 881 "lexer1.cpp"
+#line 904 "lexer1.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -937,245 +960,245 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 31 "lexer1.l"
+#line 54 "lexer1.l"
 {yylval.Int = atoi(yytext); return NUM;};
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "lexer1.l"
+#line 56 "lexer1.l"
 return IFWORD;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "lexer1.l"
+#line 57 "lexer1.l"
 return ELSEWORD;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 35 "lexer1.l"
+#line 58 "lexer1.l"
 return WHILEWORD;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 36 "lexer1.l"
+#line 59 "lexer1.l"
 return TRUE;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 37 "lexer1.l"
+#line 60 "lexer1.l"
 return FALSE;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 39 "lexer1.l"
+#line 62 "lexer1.l"
 return CLASSWORD;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 40 "lexer1.l"
+#line 63 "lexer1.l"
 return PUBLICWORD;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 41 "lexer1.l"
+#line 64 "lexer1.l"
 return PRIVATEWORD;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 42 "lexer1.l"
+#line 65 "lexer1.l"
 return STATICWORD;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 43 "lexer1.l"
+#line 66 "lexer1.l"
 return MAINWORD;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 44 "lexer1.l"
+#line 67 "lexer1.l"
 return EXTENSIONWORD;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 45 "lexer1.l"
+#line 68 "lexer1.l"
 return THISWORD;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 46 "lexer1.l"
+#line 69 "lexer1.l"
 return LENGTHWORD;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 47 "lexer1.l"
+#line 70 "lexer1.l"
 return NEWWORD;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 48 "lexer1.l"
+#line 71 "lexer1.l"
 return VOIDWORD;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 49 "lexer1.l"
+#line 72 "lexer1.l"
 return RETURNWORD;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 51 "lexer1.l"
+#line 74 "lexer1.l"
 return PRINTWORD;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 53 "lexer1.l"
+#line 76 "lexer1.l"
 return STRINGWORD;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 54 "lexer1.l"
+#line 77 "lexer1.l"
 return INTWORD;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 55 "lexer1.l"
+#line 78 "lexer1.l"
 return BOOLWORD;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 57 "lexer1.l"
-return IDENTIFIER;
+#line 80 "lexer1.l"
+{yylval.Symbol=getIntern(yytext) ; return IDENTIFIER;};
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 59 "lexer1.l"
+#line 82 "lexer1.l"
 return ASSIGN;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 60 "lexer1.l"
+#line 83 "lexer1.l"
 return PLUS;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 61 "lexer1.l"
+#line 84 "lexer1.l"
 return MINUS;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 62 "lexer1.l"
+#line 85 "lexer1.l"
 return MULTIPLY;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 63 "lexer1.l"
+#line 86 "lexer1.l"
 return MOD;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 64 "lexer1.l"
+#line 87 "lexer1.l"
 return LESS;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 65 "lexer1.l"
+#line 88 "lexer1.l"
 return GREATER;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 66 "lexer1.l"
+#line 89 "lexer1.l"
 return EQUAL;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 67 "lexer1.l"
+#line 90 "lexer1.l"
 return NOT;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 68 "lexer1.l"
+#line 91 "lexer1.l"
 return AND;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 69 "lexer1.l"
+#line 92 "lexer1.l"
 return OR;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 71 "lexer1.l"
+#line 94 "lexer1.l"
 return OBRACE;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 72 "lexer1.l"
+#line 95 "lexer1.l"
 return EBRACE;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 73 "lexer1.l"
+#line 96 "lexer1.l"
 return FOBRACE;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 74 "lexer1.l"
+#line 97 "lexer1.l"
 return FEBRACE;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 75 "lexer1.l"
+#line 98 "lexer1.l"
 return SQOBRACE;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 76 "lexer1.l"
+#line 99 "lexer1.l"
 return SQEBRACE;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 77 "lexer1.l"
+#line 100 "lexer1.l"
 return DOT;
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 78 "lexer1.l"
+#line 101 "lexer1.l"
 return COMMA;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 79 "lexer1.l"
+#line 102 "lexer1.l"
 return EOFL;
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 80 "lexer1.l"
+#line 103 "lexer1.l"
 /*игнорируем пробелы и знаки табул€ции*/;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 81 "lexer1.l"
+#line 104 "lexer1.l"
 return SEMICOLON;
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 82 "lexer1.l"
+#line 105 "lexer1.l"
 {location.line++; location.symbolBegin=0; printf("\n");}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 83 "lexer1.l"
+#line 106 "lexer1.l"
 /*игнорируем пробелы и знаки табул€ции*/;
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 84 "lexer1.l"
+#line 107 "lexer1.l"
 {if (!eofRead) {eofRead=true; return EOFL;} else yyterminate();}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 86 "lexer1.l"
+#line 109 "lexer1.l"
 ECHO;
 	YY_BREAK
-#line 1178 "lexer1.cpp"
+#line 1201 "lexer1.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2174,5 +2197,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 86 "lexer1.l"
+#line 109 "lexer1.l"
 

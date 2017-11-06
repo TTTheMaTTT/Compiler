@@ -1,52 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include "GrammarDeclarations.h"
 using namespace std;
-
-//Класс посетителя
-class IVisitor
-{
-public:
-	virtual string visit(const Program* n)=0;
-	virtual string visit(const IMainClass* n)=0;
-	virtual string visit(const AddClassDeclarationList* n) = 0;
-	virtual string visit(const EmptyClassDeclarationList* n) = 0;
-	virtual string visit(const IClassDeclaration* n) = 0;
-	virtual string visit(const AddVarDeclarationList* n) = 0;
-	virtual string visit(const EmptyVarDeclarationList* n) = 0;
-	virtual string visit(const IVarDeclaration* n) = 0;
-	virtual string visit(const AddMethodDeclarationList* n) = 0;
-	virtual string visit(const EmptyMethodDeclarationList* n) = 0;
-	virtual string visit(const IMethodDeclaration* n) = 0;
-	virtual string visit(const AddArgumentList* n) = 0;
-	virtual string visit(const OnlyArgumentList* n) = 0;
-	virtual string visit(const ZeroArgumentList* n) = 0;
-	virtual string visit(const AddStatementList* n) = 0;
-	virtual string visit(const EmptyStatementList* n) = 0;
-	virtual string visit(const CompoundStatement* n) = 0;
-	virtual string visit(const ConditionalStatement* n) = 0;
-	virtual string visit(const CycleStatement* n) = 0;
-	virtual string visit(const PrintStatement* n) = 0;
-	virtual string visit(const AssignStatement* n) = 0;
-	virtual string visit(const AssignArrayElementStatement* n) = 0;
-	virtual string visit(const AddExpList* n) = 0;
-	virtual string visit(const OnlyExpList* n) = 0;
-	virtual string visit(const ZeroExpList* n) = 0;
-	virtual string visit(const BinopExp* n) = 0;
-	virtual string visit(const GetArrayElementExp* n) = 0;
-	virtual string visit(const GetLengthExp* n) = 0;
-	virtual string visit(const MethodExp* n) = 0;
-	virtual string visit(const NumExp* n) = 0;
-	virtual string visit(const BoolExp* n) = 0;
-	virtual string visit(const IDExp* n) = 0;
-	virtual string visit(const ThisExp* n) = 0;
-	virtual string visit(const GetArrayExp* n) = 0;
-	virtual string visit(const NewObjectExp* n) = 0;
-	virtual string visit(const NegativeExp* n) = 0;
-	virtual string visit(const EnclosedExp* n) = 0;
-};
 
 #pragma region SyntaxClasses
 
@@ -58,7 +10,7 @@ public:
 	const IMainClass *mClass;
 	const IClassDeclarationList *classList;
 
-	Program(const IMainClass* _mClass, const IClassDeclarationList* _classList) :mClass(_mClass), classList(_classList){};
+	Program(const IMainClass* _mClass, const IClassDeclarationList* _classList) :mClass(_mClass), classList(_classList) {};
 
 };
 
@@ -67,11 +19,14 @@ class IMainClass
 {
 public:
 
+	const Symbol* name;
+	const Symbol* argName;//Имя аргумента функции main типа String[]
 	const IStatement* statement;
 
-	IMainClass(const IStatement* _statement) : statement(_statement) {}
+	IMainClass(const Symbol* _name, const Symbol* _argName, const IStatement* _statement) : 
+																name(_name), argName(_argName), statement(_statement) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -83,7 +38,7 @@ public:
 class IClassDeclarationList
 {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Список объявлений классов с одним объявлением и хвостом
@@ -95,7 +50,7 @@ public:
 
 	AddClassDeclarationList(const IClassDeclarationList* _classList, const IClassDeclaration* _c) : classList(_classList), c(_c) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -107,7 +62,7 @@ class EmptyClassDeclarationList : public IClassDeclarationList
 public:
 	EmptyClassDeclarationList() {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -119,12 +74,14 @@ public:
 class IClassDeclaration
 {
 public:
+	const Symbol* name;
 	const IVarDeclarationList* varList;
 	const IMethodDeclarationList* methodList;
 
-	IClassDeclaration(const IVarDeclarationList* _varList, const IMethodDeclarationList* _methodList) :varList(_varList), methodList(_methodList) {}
+	IClassDeclaration(const Symbol* _name, const IVarDeclarationList* _varList, const IMethodDeclarationList* _methodList) :
+																								name(_name),varList(_varList), methodList(_methodList) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -136,7 +93,7 @@ public:
 class IVarDeclarationList
 {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Список объявлений переменных с одним объявлением и хвостом
@@ -148,7 +105,7 @@ public:
 
 	AddVarDeclarationList(const IVarDeclarationList* _varList, const IVarDeclaration* _v) : varList(_varList), var(_v) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -161,7 +118,7 @@ class EmptyVarDeclarationList : public IVarDeclarationList
 public:
 	EmptyVarDeclarationList() {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -174,9 +131,12 @@ class IVarDeclaration
 {
 public:
 
-	IVarDeclaration() {}
+	const IType* typ;
+	const Symbol* name;
 
-	string Accept(IVisitor *v) const
+	IVarDeclaration(const IType* _typ, const Symbol* _name):typ(_typ), name(_name) {}
+
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -188,7 +148,7 @@ public:
 class IMethodDeclarationList
 {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Список объявлений методов с одним объявлением и хвостом
@@ -200,7 +160,7 @@ public:
 
 	AddMethodDeclarationList(const IMethodDeclarationList* _methodList, const IMethodDeclaration* _m) : methodList(_methodList), m(_m) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -213,7 +173,7 @@ class EmptyMethodDeclarationList : public IMethodDeclarationList
 public:
 	EmptyMethodDeclarationList() {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -226,15 +186,18 @@ class IMethodDeclaration
 {
 public:
 
+	const IType* typ;
+	const Symbol* name;
 	const IArgumentList* argList;
 	const IVarDeclarationList* varList;
 	const IStatementList* stateList;
 	const IExp* e;
 
-	IMethodDeclaration(const IArgumentList* _argList, const IVarDeclarationList* _varList, const IStatementList* _stateList, const IExp* _e) :
-		argList(_argList), varList(_varList), stateList(_stateList), e(_e) {}
+	IMethodDeclaration(const IType* _typ, const Symbol* _name, const IArgumentList* _argList, const IVarDeclarationList* _varList, 
+						const IStatementList* _stateList, const IExp* _e) :
+						typ(_typ), name(_name),argList(_argList), varList(_varList), stateList(_stateList), e(_e) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -246,7 +209,7 @@ public:
 class IArgumentList
 {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Список аргументов с хвостом
@@ -255,11 +218,13 @@ class AddArgumentList : public IArgumentList
 
 public:
 
+	const IType* typ;
+	const Symbol* name;
 	const IArgumentList* argList;
 
-	AddArgumentList(const IArgumentList* _argList) :argList(_argList) {}
+	AddArgumentList(const IType* _typ, const Symbol* _name, const IArgumentList* _argList) :typ(_typ), name(_name), argList(_argList) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -271,9 +236,12 @@ class OnlyArgumentList : public IArgumentList
 {
 public:
 
-	OnlyArgumentList() {}
+	const IType* typ;
+	const Symbol* name;
 
-	string Accept(IVisitor *v) const
+	OnlyArgumentList(const IType* _typ, const Symbol* _name):typ(_typ), name(_name) {}
+
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -286,7 +254,7 @@ public:
 
 	ZeroArgumentList() {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -301,7 +269,7 @@ public:
 class IStatementList
 {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Список утверждений с одним утверждением и хвостом
@@ -313,7 +281,7 @@ public:
 
 	AddStatementList(const IStatement* _s, const IStatementList* _stateList) : stateList(_stateList), s(_s) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -326,7 +294,7 @@ class EmptyStatementList : public IStatementList
 public:
 	EmptyStatementList() {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -340,7 +308,7 @@ public:
 class IStatement
 {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Составное утверждение
@@ -351,7 +319,7 @@ public:
 
 	CompoundStatement(const IStatementList* _stateList) :stateList(_stateList) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -367,7 +335,7 @@ public:
 
 	ConditionalStatement(const IExp* _ifExp, const IStatement* _thenState, const IStatement* _elseState) :ifExp(_ifExp), thenState(_thenState), elseState(_elseState) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -382,7 +350,7 @@ public:
 
 	CycleStatement(const IExp* _conditionExp, const IStatement* _actionState) :conditionExp(_conditionExp), actionState(_actionState) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -396,7 +364,7 @@ public:
 
 	PrintStatement(const IExp* _e) :e(_e) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -406,11 +374,12 @@ public:
 class AssignStatement :public IStatement
 {
 public:
+	const Symbol* varName;
 	const IExp* e;
 
-	AssignStatement(const IExp* _e) :e(_e) {}
+	AssignStatement(const Symbol* _varName, const IExp* _e) :varName(_varName), e(_e) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -420,13 +389,13 @@ public:
 class AssignArrayElementStatement :public IStatement
 {
 public:
+	const Symbol* varName;
 	const IExp* e;
 	const IExp* index;
 
+	AssignArrayElementStatement(const Symbol* _varName, const IExp* _index, const IExp* _e) :varName(_varName), index(_index), e(_e) {}
 
-	AssignArrayElementStatement(const IExp* _index, const IExp* _e) :index(_index), e(_e) {}
-
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -439,7 +408,7 @@ public:
 //Интерфейс списка утверждений
 class IExpList {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Список выражений с хвостом
@@ -452,7 +421,7 @@ public:
 
 	AddExpList(const IExp* _e1, const IExpList *_eList) :e1(_e1), eList(_eList) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -467,7 +436,7 @@ public:
 
 	OnlyExpList(const IExp* _e1) :e1(_e1) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -480,7 +449,7 @@ public:
 
 	ZeroExpList() {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -494,7 +463,7 @@ public:
 //Интерфейс выражения
 class IExp {
 public:
-	virtual string Accept(IVisitor *v) const = 0;
+	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
 //Бинарная операция
@@ -505,7 +474,7 @@ public:
 
 	BinopExp(const IExp *_e1, const IExp *_e2) :e1(_e1), e2(_e2) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -519,7 +488,7 @@ public:
 
 	GetArrayElementExp(const IExp *_e1, const IExp *_e2) :e1(_e1), e2(_e2) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -532,7 +501,7 @@ public:
 	const IExp *e1;
 	GetLengthExp(const IExp *_e1) :e1(_e1) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -544,11 +513,12 @@ class MethodExp : public IExp
 public:
 
 	const IExp *e1;
+	const Symbol* methodName;
 	const IExpList *eList;
 
-	MethodExp(const IExp *_e1, const IExpList* _eList) :e1(_e1), eList(_eList) {}
+	MethodExp(const IExp *_e1, const Symbol* _methodName, const IExpList* _eList) :methodName(_methodName),e1(_e1), eList(_eList) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -563,7 +533,7 @@ public:
 
 	NumExp(const int _num) :num(_num) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -577,7 +547,7 @@ public:
 
 	BoolExp(const bool _flag) :flag(_flag) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -588,9 +558,11 @@ public:
 class IDExp : public IExp {
 public:
 
-	IDExp() {}
+	const Symbol* id;
 
-	string Accept(IVisitor *v) const
+	IDExp(const Symbol* _id):id(_id) {}
+
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -604,7 +576,7 @@ public:
 	ThisExp() {}
 
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -618,7 +590,7 @@ public:
 
 	GetArrayExp(const IExp *_e1) :e1(_e1) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -629,9 +601,11 @@ class NewObjectExp : public IExp
 {
 public:
 
-	NewObjectExp() {}
+	const Symbol* typName;//Название типа создаваемого объекта
 
-	string Accept(IVisitor *v) const
+	NewObjectExp(const Symbol* _typName): typName(_typName) {}
+
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -646,7 +620,7 @@ public:
 
 	NegativeExp(const IExp *_e1) : e1(_e1) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -660,7 +634,7 @@ public:
 	const IExp *e1;
 	EnclosedExp(const IExp *_e1) :e1(_e1) {}
 
-	string Accept(IVisitor *v) const
+	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
@@ -669,356 +643,3 @@ public:
 #pragma endregion
 
 #pragma endregion
-
-//Класс посетителя, который создаёт синтаксическое дерево
-class Printer : public IVisitor
-{
-public:
-	string visit(const Program* n)
-	{
-		fout = ofstream("graph.dot");
-		fout << "digraph G" << endl << "{" << endl;
-		string child1 = n->mClass->Accept(this);
-		string child2 = n->classList->Accept(this);
-		fout << "Program->" << child1 << endl << "Program->" << child2 << endl<<"}"<<endl;
-		fout.close();
-		return "";
-	}
-
-	string visit(const IMainClass* n)
-	{
-		string name = "MainClass";
-		string child = n->statement->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const AddClassDeclarationList* n)
-	{
-		string name = CompoundString("ClassList", classListCount);
-		classListCount++;
-		string child1 = n->classList->Accept(this);
-		string child2 = n->c->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const EmptyClassDeclarationList* n)
-	{
-		string name = CompoundString("EmptyClassList", classListCount);
-		classListCount++;
-		return name;
-	}
-
-	string visit(const IClassDeclaration* n)
-	{
-		string name = CompoundString("Class", classCount);
-		classCount++;
-		string child1 = n->methodList->Accept(this);
-		string child2 = n->varList->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const AddVarDeclarationList* n)
-	{
-		string name = CompoundString("VarList", varListCount);
-		varListCount++;
-		string child1 = n->varList->Accept(this);
-		string child2 = n->var->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const 	EmptyVarDeclarationList* n)
-	{
-		string name = CompoundString("EmptyVarList", varListCount);
-		varListCount++;
-		return name;
-	}
-
-	string visit(const IVarDeclaration* n)
-	{
-		string name = CompoundString("Var", varCount);
-		varCount++;
-		return name;
-	}
-
-	string visit(const AddMethodDeclarationList* n)
-	{
-		string name = CompoundString("MethodList", methodListCount);
-		methodListCount++;
-		string child1 = n->methodList->Accept(this);
-		string child2 = n->m->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const EmptyMethodDeclarationList* n)
-	{
-		string name = CompoundString("EmptyMethodList", methodListCount);
-		methodListCount++;
-		return name;
-	}
-
-	string visit(const IMethodDeclaration* n)
-	{
-		string name = CompoundString("Method", methodCount);
-		methodCount++;
-		string argList = n->argList->Accept(this);
-		string varList = n->varList->Accept(this);
-		string stateList = n->stateList->Accept(this);
-		string retExp = n->e->Accept(this);
-		fout << name << "->" << argList << endl << name << "->" << varList << endl <<
-			name << "->" << stateList << endl << name << "->" << retExp << " [label=\"return\"]" << endl;
-		return name;
-	}
-
-	string visit(const AddArgumentList* n)
-	{
-		string name = CompoundString("ArgumentList", argumentListCount);
-		argumentListCount++;
-		string child = n->argList->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const OnlyArgumentList* n)
-	{
-		string name = CompoundString("Argument", argumentListCount);
-		argumentListCount++;
-		return name;
-	}
-
-	string visit(const ZeroArgumentList* n)
-	{
-		string name = CompoundString("EmptyArgumentList", argumentListCount);
-		argumentListCount++;
-		return name;
-	}
-
-	string visit(const AddStatementList* n)
-	{
-		string name = CompoundString("StatementList", statementListCount);
-		statementListCount++;
-		string child1 = n->stateList->Accept(this);
-		string child2 = n->s->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const EmptyStatementList* n)
-	{
-		string name = CompoundString("EmptyStatementList", statementListCount);
-		statementListCount++;
-		return name;
-	}
-
-	string visit(const CompoundStatement* n)
-	{
-		string name = CompoundString("CompoundStatement", statementCount);
-		statementCount++;
-		string child = n->stateList->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const ConditionalStatement* n)
-	{
-		string name = CompoundString("ConditionalStatement", statementCount);
-		statementCount++;
-		string child1 = n->ifExp->Accept(this);
-		string child2 = n->thenState->Accept(this);
-		string child3 = n->elseState->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl << name << "->" << child3 << endl;
-		return name;
-	}
-
-	string visit(const CycleStatement* n)
-	{
-		string name = CompoundString("CycleStatement", statementCount);
-		statementCount++;
-		string child1 = n->conditionExp->Accept(this);
-		string child2 = n->actionState->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const PrintStatement* n)
-	{
-		string name = CompoundString("PrintStatement", statementCount);
-		statementCount++;
-		string child = n->e->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const AssignStatement* n)
-	{
-		string name = CompoundString("AssignStatement", statementCount);
-		statementCount++;
-		string child = n->e->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const AssignArrayElementStatement* n)
-	{
-		string name = CompoundString("AssignArrayElementStatement", statementCount);
-		statementCount++;
-		string child1 = n->e->Accept(this);
-		string child2 = n->index->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const AddExpList* n)
-	{
-		string name = CompoundString("ExpressionList", expressionListCount);
-		expressionListCount++;
-		string child1 = n->eList->Accept(this);
-		string child2 = n->e1->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const OnlyExpList* n)
-	{
-		string name = CompoundString("OneExpressionList", expressionListCount);
-		expressionListCount++;
-		string child = n->e1->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const ZeroExpList* n)
-	{
-		string name = CompoundString("EmptyExpressionList", expressionListCount);
-		expressionListCount++;
-		return name;
-	}
-
-	string visit(const BinopExp* n)
-	{
-		string name = CompoundString("BinopExp", expressionCount);
-		expressionCount++;
-		string child1 = n->e1->Accept(this);
-		string child2 = n->e2->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const GetArrayElementExp* n)
-	{
-		string name = CompoundString("GetArElExp", expressionCount);
-		expressionCount++;
-		string child1 = n->e1->Accept(this);
-		string child2 = n->e2->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const GetLengthExp* n)
-	{
-		string name = CompoundString("GetLenExp", expressionCount);
-		expressionCount++;
-		string child = n->e1->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const MethodExp* n)
-	{
-		string name = CompoundString("MethodExp", expressionCount);
-		expressionCount++;
-		string child1 = n->e1->Accept(this);
-		string child2 = n->eList->Accept(this);
-		fout << name << "->" << child1 << endl << name << "->" << child2 << endl;
-		return name;
-	}
-
-	string visit(const NumExp* n)
-	{
-		string name = CompoundString("NumExp", expressionCount);
-		expressionCount++;
-		return name;
-	}
-
-	string visit(const BoolExp* n)
-	{
-		string name = CompoundString("BoolExp", expressionCount);
-		expressionCount++;
-		return name;
-	}
-
-	string visit(const IDExp* n)
-	{
-		string name = CompoundString("IDExp", expressionCount);
-		expressionCount++;
-		return name;
-	}
-
-	string visit(const ThisExp* n)
-	{
-		string name = CompoundString("ThisExp", expressionCount);
-		expressionCount++;
-		return name;
-	}
-
-	string visit(const GetArrayExp* n)
-	{
-		string name = CompoundString("GetArExp", expressionCount);
-		expressionCount++;
-		string child = n->e1->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const NewObjectExp* n)
-	{
-		string name = CompoundString("NewObjExp", expressionCount);
-		expressionCount++;
-		return name;
-	}
-
-	string visit(const NegativeExp* n)
-	{
-		string name = CompoundString("NegExp", expressionCount);
-		expressionCount++;
-		string child = n->e1->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-	string visit(const EnclosedExp* n)
-	{
-		string name = CompoundString("EnclExp", expressionCount);
-		expressionCount++;
-		string child = n->e1->Accept(this);
-		fout << name << "->" << child << endl;
-		return name;
-	}
-
-private:
-	string CompoundString(string arg1, int arg2)
-	{
-		ostringstream ost;
-		ost << arg1 << arg2;
-		return ost.str();
-	}
-
-	ofstream fout;
-
-	int classCount = 0;
-	int classListCount = 0;
-	int methodCount = 0;
-	int methodListCount = 0;
-	int varCount = 0;
-	int varListCount = 0;
-	int argumentListCount = 0;
-	int statementCount = 0;
-	int statementListCount = 0;
-	int expressionCount = 0;
-	int expressionListCount = 0;
-
-};

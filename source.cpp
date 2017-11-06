@@ -1,14 +1,25 @@
 #include <stdio.h>
-#include <string.h>
-#include <iostream>
 #include "parser.h"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+#include "Symbol.h"
+extern Symbol* getIntern(const string& src);
+#include "Table.h"
+#include "GrammarDeclarations.h"
+#include "Visitor.h"
 #include "GrammarDescriptions.h"
+#include "VarTableCreator.h"
 
 using namespace std;
 
-Program prog;
-Printer p;
+extern const Program* prog;
+extern VarTableCreator v;
 
 // this function is called syntax parser
 // just the parser, the parse
@@ -33,13 +44,6 @@ int main()
 	yyparse();
 	fclose(yyin);
 	system("pause");//Не сразу закрываем консоль
-	p.visit(&prog);
+	rValue information=v.visit(prog);
 	return 0;
-}
-
-// we have to code this function
-void yyerror(const char* msg)
-{
-	fprintf(stderr, "ошибка: %s\n", str);
-	system("pause");//Не сразу закрываем консоль
 }

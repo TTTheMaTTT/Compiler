@@ -6,7 +6,14 @@
 #include <stdio.h>
 #include <iostream>
 #include "parser.h"
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 using namespace std;
+
+#include "Symbol.h"
+#include "Table.h"
 
 struct Location 
 {
@@ -16,12 +23,28 @@ struct Location
 int wordsNum=0;
 bool eofRead=false;
 
+//Интернирование строк в указатели на объект класса Symbol
+Symbol* getIntern(const string& src)
+{
+	static unordered_map<string, Symbol*> allStrings;
+	auto cached = allStrings.find(src);
+	if (cached != allStrings.end()) {
+		return cached->second;
+	}
+	Symbol* newVal = new Symbol(src);
+	allStrings.insert({ src, newVal });
+	return newVal;
+}
+
 void action(int yyact, int yyleng)
 {
 	//if (yyact>24)
 		//return;
 	//cout<<"("<<location.line<<", "<<location.symbolBegin<<")";
 	location.symbolBegin+=yyleng;
+	yylloc.first_line = location.line;
+	yylloc.first_column = location.symbolBegin;
+
 }
 
 %}
@@ -54,7 +77,7 @@ String return STRINGWORD;
 int return INTWORD;
 boolean return BOOLWORD;
 
-[a-zA-Z][a-zA-Z0-9_]* return IDENTIFIER;
+[a-zA-Z][a-zA-Z0-9_]* {yylval.Symbol=getIntern(yytext) ; return IDENTIFIER;};
 
 = return ASSIGN;
 \+ return PLUS;
