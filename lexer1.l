@@ -41,9 +41,9 @@ void action(int yyact, int yyleng)
 	//if (yyact>24)
 		//return;
 	//cout<<"("<<location.line<<", "<<location.symbolBegin<<")";
-	location.symbolBegin+=yyleng;
 	yylloc.first_line = location.line;
 	yylloc.first_column = location.symbolBegin;
+	location.symbolBegin+=yyleng;
 
 }
 
@@ -102,7 +102,7 @@ boolean return BOOLWORD;
 \$ return EOFL;
 \/\/[^\n]* /*игнорируем пробелы и знаки табуляции*/;
 \; return SEMICOLON;
-\n {location.line++; location.symbolBegin=0; printf("\n");}
+\n {location.line++; location.symbolBegin=0;}
 [ \t]+ /*игнорируем пробелы и знаки табуляции*/;
 <<eof>> {if (!eofRead) {eofRead=true; return EOFL;} else yyterminate();}
 

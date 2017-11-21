@@ -27,31 +27,61 @@ class Info
 {
 public:
 
-	Info(const IType* _typ, const Symbol* _name, vector<const Info*> _nestedInfo) :typ(_typ), name(_name), nestedInfo(_nestedInfo) {};
+	Info(const IType* _typ, const Symbol* _name, vector<const Info*> _nestedInfo) :typ(_typ), name(_name),nestedInfo(_nestedInfo)
+	{
+		infoType = "info";
+	}
+
+	Info(const IType* _typ) :typ(_typ), nestedInfo({})
+	{
+		infoType = "info";
+	}
 
 	//Вернуть тип объекта
 	virtual const IType* GetType() const
 	{
-		return nullptr;
+		return typ;
 	}
 
 	//Вернуть имя объекта
 	virtual const Symbol* GetName() const
 	{
-		return nullptr;
+		return name;
 	}
 
+	//Вернуть вложенную информацию
 	virtual vector<const Info*> GetNestedInfo() const
 	{
 		vector<const Info*> nothing;
 		return nothing;
 	}
 
+	//Вернуть название типа информации
+	virtual string GetInfoType() const
+	{
+		return infoType;
+	}
+
+	//Установить тип информации
+	virtual void SetInfoType(string _infoType)
+	{
+		infoType = _infoType;
+	}
+
+	//Добавить информацию в nestedInfo
 	virtual void PushNestedInfo(const Info* newInfo)
 	{
 	}
 
+	//Убрать всю вложенную информацию
+	virtual void ClearNestedInfo()
+	{
+		nestedInfo.clear();
+	}
+
 protected:
+
+	string infoType;
 	const IType* typ;
 	const Symbol* name;
 	vector<const Info*> nestedInfo;
@@ -62,8 +92,15 @@ class ClassInfo :public Info
 {
 public:
 
-	ClassInfo(const IType* _typ, const Symbol* _name, vector<const Info*> _nestedInfo) :Info(_typ,_name, _nestedInfo){}
-	ClassInfo(const Symbol* _name, vector<const Info*> _nestedInfo) :Info(new IType(getIntern("Class")), _name, _nestedInfo) {}
+	ClassInfo(const IType* _typ, const Symbol* _name, vector<const Info*> _nestedInfo) :Info(_typ, _name, _nestedInfo) 
+	{ 
+		infoType = "class"; 
+	}
+
+	ClassInfo(const Symbol* _name, vector<const Info*> _nestedInfo) :Info(new IType(getIntern("Class")), _name, _nestedInfo)
+	{
+		infoType = "class";
+	}
 
 
 	//Вернуть тип объекта
@@ -97,7 +134,10 @@ class MethodInfo :public Info
 {
 public:
 
-	MethodInfo(const IType* _typ, const Symbol* _name, vector<const Info*> _nestedInfo) :Info(_typ, _name, _nestedInfo) {}
+	MethodInfo(const IType* _typ, const Symbol* _name, vector<const Info*> _nestedInfo) :Info(_typ, _name, _nestedInfo) 
+	{
+		infoType = "method";
+	}
 
 	//Вернуть тип объекта
 	const IType* GetType() const
@@ -129,7 +169,10 @@ class VariableInfo :public Info
 {
 public:
 
-	VariableInfo(const IType* _typ, const Symbol* _name) :Info(_typ, _name, {}) {}
+	VariableInfo(const IType* _typ, const Symbol* _name) :Info(_typ, _name, {})
+	{
+		infoType = "var";
+	}
 
 	//Вернуть тип объекта
 	const IType* GetType() const
@@ -149,7 +192,10 @@ class ContainerInfo :public Info
 {
 public:
 
-	ContainerInfo(vector<const Info*> _nestedInfo) :Info(nullptr, nullptr, _nestedInfo) {}
+	ContainerInfo(vector<const Info*> _nestedInfo) :Info(nullptr, nullptr, _nestedInfo) 
+	{
+		infoType = "container";
+	}
 
 	//Вернуть информацию о вложенных объектах
 	vector<const Info*> GetNestedInfo() const

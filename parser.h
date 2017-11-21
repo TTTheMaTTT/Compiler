@@ -58,22 +58,22 @@ extern int yydebug;
     SQEBRACE = 261,
     OBRACE = 262,
     EBRACE = 263,
-    SEMICOLON = 264,
-    COMMA = 265,
-    DOT = 266,
-    OR = 267,
-    AND = 268,
-    NOT = 269,
-    EQUAL = 270,
-    GREATER = 271,
-    LESS = 272,
-    IFWORD = 273,
-    ELSEWORD = 274,
-    WHILEWORD = 275,
-    MOD = 276,
-    MULTIPLY = 277,
-    MINUS = 278,
-    PLUS = 279,
+    PLUS = 264,
+    MINUS = 265,
+    MULTIPLY = 266,
+    MOD = 267,
+    SEMICOLON = 268,
+    COMMA = 269,
+    DOT = 270,
+    NOT = 271,
+    OR = 272,
+    AND = 273,
+    LESS = 274,
+    GREATER = 275,
+    EQUAL = 276,
+    IFWORD = 277,
+    ELSEWORD = 278,
+    WHILEWORD = 279,
     ASSIGN = 280,
     EOFL = 281,
     STRINGWORD = 282,
@@ -108,6 +108,7 @@ union YYSTYPE
 	int Int;
 	const Symbol* Symbol;//Символ
 	const IType* Type;//Тип объектов
+	const Extension* Extension;//Тип, указывающий информацию о наследовании
 	const Program* Program;
 	const IMainClass* MainClass;
 	const IClassDeclarationList* ClassDeclarationList;
@@ -122,7 +123,7 @@ union YYSTYPE
 	const IExpList* ExpList;
 	const IExp* Exp;
 
-#line 126 "parser.h" /* yacc.c:1909  */
+#line 127 "parser.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

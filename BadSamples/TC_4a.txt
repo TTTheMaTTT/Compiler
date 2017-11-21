@@ -18,9 +18,11 @@ class TV {
 }
 
 
-class Visitor extends MyVisitor {
-}
 
+class Visitor {
 
-class MyVisitor extends Visitor {
+    public int visit(TV n, TV n){     // HERE
+		return 0;
+    }
+
 }

@@ -1,6 +1,7 @@
 #include <string>
 using namespace std;
 
+struct Extension;
 class Program;
 class IMainClass;
 class IClassDeclarationList;
@@ -21,6 +22,7 @@ class OnlyArgumentList;
 class ZeroArgumentList;
 class IStatementList;
 class AddStatementList;
+class ErrorStatementList;
 class EmptyStatementList;
 class IStatement;
 class CompoundStatement;

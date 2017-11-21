@@ -674,9 +674,9 @@ void action(int yyact, int yyleng)
 	//if (yyact>24)
 		//return;
 	//cout<<"("<<location.line<<", "<<location.symbolBegin<<")";
-	location.symbolBegin+=yyleng;
 	yylloc.first_line = location.line;
 	yylloc.first_column = location.symbolBegin;
+	location.symbolBegin+=yyleng;
 
 }
 
@@ -1182,7 +1182,7 @@ case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
 #line 105 "lexer1.l"
-{location.line++; location.symbolBegin=0; printf("\n");}
+{location.line++; location.symbolBegin=0;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP

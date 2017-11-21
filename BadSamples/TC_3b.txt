@@ -21,8 +21,8 @@ class TV {
 
 class Visitor {
 
-    public int visit(TV n, TV n){     // HERE
+	public TV2 visit(){	// HERE
 		return 0;
-    }
+	}
 
 }

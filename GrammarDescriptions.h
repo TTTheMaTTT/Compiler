@@ -1,5 +1,211 @@
 using namespace std;
 
+/*
+//Структура, которая указывает на строку и столбец в компилируемом коде
+struct Position
+{
+	int line;
+	int pos;
+
+	Position(int _line, int _pos) : line(_line), pos(_pos) {};
+};
+*/
+
+//Структура, в которой хранится информация о наследовании
+struct Extension
+{
+	const Symbol* parentClassName;
+	const int line;
+
+	Extension() :line(-1) {};
+	Extension(const Symbol* _parentClassName, const int _line) : parentClassName(_parentClassName), line(_line) {};
+};
+
+#pragma region Lists
+
+#pragma region ClassDeclarationList
+
+//Интерфейс списка объявлений классов
+class IClassDeclarationList
+{
+public:
+	vector<const IClassDeclaration *> classes;
+	IClassDeclarationList() {};
+	IClassDeclarationList(const IClassDeclarationList* _classList) :classes(_classList->classes) {};
+};
+
+//Список объявлений классов с одним объявлением и хвостом
+class AddClassDeclarationList : public IClassDeclarationList
+{
+public:
+
+	AddClassDeclarationList(const IClassDeclarationList* _classList, const IClassDeclaration* _c) : IClassDeclarationList(_classList)
+	{
+		classes.push_back(_c);
+	}
+};
+
+//Пустой список объявлений классов
+class EmptyClassDeclarationList : public IClassDeclarationList
+{
+public:
+	EmptyClassDeclarationList() {}
+};
+
+#pragma endregion
+
+#pragma region VarDeclarationList
+
+//Список переменных
+class IVarDeclarationList
+{
+public:
+	vector<const IVarDeclaration*> vars;
+	IVarDeclarationList() {};
+	IVarDeclarationList(const IVarDeclarationList* _varList) : vars(_varList->vars) {}
+};
+
+//Список объявлений переменных с одним объявлением и хвостом
+class AddVarDeclarationList : public IVarDeclarationList
+{
+public:
+	AddVarDeclarationList(const IVarDeclarationList* _varList, const IVarDeclaration* _v) : IVarDeclarationList(_varList)
+	{
+		vars.push_back(_v);
+	}
+};
+
+//Пустой список объявлений переменных
+class EmptyVarDeclarationList : public IVarDeclarationList
+{
+public:
+	EmptyVarDeclarationList() {}
+};
+
+#pragma endregion
+
+#pragma region MethodDeclarationList
+
+//Список методов
+class IMethodDeclarationList
+{
+public:
+	vector<const IMethodDeclaration*> methods;
+	IMethodDeclarationList() {};
+	IMethodDeclarationList(const IMethodDeclarationList* _methodList) : methods(_methodList->methods) {};
+};
+
+//Список объявлений методов с одним объявлением и хвостом
+class AddMethodDeclarationList : public IMethodDeclarationList
+{
+public:
+
+	AddMethodDeclarationList(const IMethodDeclarationList* _methodList, const IMethodDeclaration* _m) : IMethodDeclarationList(_methodList)
+	{
+		methods.push_back(_m);
+	}
+
+};
+
+//Пустой список объявлений методов
+class EmptyMethodDeclarationList : public IMethodDeclarationList
+{
+public:
+	EmptyMethodDeclarationList() {}
+};
+
+#pragma endregion
+
+#pragma region StatementList
+
+//Интерфейс списка утверждений
+class IStatementList
+{
+public:
+	vector<const IStatement*> statements;
+	IStatementList() {};
+	IStatementList(const IStatementList* _stateList) : statements(_stateList->statements) {};
+};
+
+//Список утверждений с одним утверждением и хвостом
+class AddStatementList : public IStatementList
+{
+public:
+
+	AddStatementList(const IStatement* _s, const IStatementList* _stateList)
+	{
+		statements.push_back(_s);
+		for (auto state : _stateList->statements)
+			statements.push_back(state);
+	}
+
+};
+
+//Пустой список объявлений методов
+class EmptyStatementList : public IStatementList
+{
+public:
+	EmptyStatementList() {}
+};
+
+//Список утверждений с синтаксической ошибкой и хвостом
+class ErrorStatementList : public IStatementList
+{
+public:
+
+	ErrorStatementList(const IStatementList* _stateList) : IStatementList(_stateList) {}
+};
+
+#pragma endregion
+
+#pragma region ExpressionList
+
+//Интерфейс списка утверждений
+class IExpList {
+public:
+	vector<const IExp*> exps;
+};
+
+//Список выражений с хвостом
+class AddExpList : public IExpList {
+
+public:
+
+	AddExpList(const IExp* _e1, const IExpList *_eList)
+	{
+		exps.push_back(_e1);
+		for (auto exp : _eList->exps)
+			exps.push_back(exp);
+	}
+
+};
+
+//Список выражений, состоящий из одного элемента
+class OnlyExpList : public IExpList {
+
+public:
+	const IExp* e1;
+
+	OnlyExpList(const IExp* _e1)
+	{
+		exps.push_back(_e1);
+	}
+
+};
+
+//Пустой список выражений
+class ZeroExpList : public IExpList {
+
+public:
+
+	ZeroExpList() {}
+
+};
+
+#pragma endregion
+
+#pragma endregion
+
 #pragma region SyntaxClasses
 
 //Программа
@@ -8,9 +214,9 @@ class Program
 public:
 	string text;
 	const IMainClass *mClass;
-	const IClassDeclarationList *classList;
+	vector<const IClassDeclaration *> classes;
 
-	Program(const IMainClass* _mClass, const IClassDeclarationList* _classList) :mClass(_mClass), classList(_classList) {};
+	Program(const IMainClass* _mClass, const IClassDeclarationList* _classList) :mClass(_mClass), classes(_classList->classes) {};
 
 };
 
@@ -32,99 +238,25 @@ public:
 	}
 };
 
-#pragma region ClassDeclarationList
-
-//Интерфейс списка объявлений классов
-class IClassDeclarationList
-{
-public:
-	virtual rValue Accept(IVisitor *v) const = 0;
-};
-
-//Список объявлений классов с одним объявлением и хвостом
-class AddClassDeclarationList : public IClassDeclarationList
-{
-public:
-	const IClassDeclarationList* classList;
-	const IClassDeclaration* c;
-
-	AddClassDeclarationList(const IClassDeclarationList* _classList, const IClassDeclaration* _c) : classList(_classList), c(_c) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-};
-
-//Пустой список объявлений классов
-class EmptyClassDeclarationList : public IClassDeclarationList
-{
-public:
-	EmptyClassDeclarationList() {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-};
-
-#pragma endregion
-
 //Интерфейс объявления класса
 class IClassDeclaration
 {
 public:
 	const Symbol* name;
-	const IVarDeclarationList* varList;
-	const IMethodDeclarationList* methodList;
+	const Extension* ext;
+	vector<const IVarDeclaration*> vars;
+	vector<const IMethodDeclaration*> methods;	
+	const int line;
 
-	IClassDeclaration(const Symbol* _name, const IVarDeclarationList* _varList, const IMethodDeclarationList* _methodList) :
-																								name(_name),varList(_varList), methodList(_methodList) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-};
-
-#pragma region VarDeclarationList
-
-//Список переменных
-class IVarDeclarationList
-{
-public:
-	virtual rValue Accept(IVisitor *v) const = 0;
-};
-
-//Список объявлений переменных с одним объявлением и хвостом
-class AddVarDeclarationList : public IVarDeclarationList
-{
-public:
-	const IVarDeclarationList* varList;
-	const IVarDeclaration* var;
-
-	AddVarDeclarationList(const IVarDeclarationList* _varList, const IVarDeclaration* _v) : varList(_varList), var(_v) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-
-};
-
-//Пустой список объявлений переменных
-class EmptyVarDeclarationList : public IVarDeclarationList
-{
-public:
-	EmptyVarDeclarationList() {}
+	IClassDeclaration(const Symbol* _name, const Extension* _ext, 
+					const IVarDeclarationList* _varList,const IMethodDeclarationList* _methodList, const int _line) :
+					name(_name),ext(_ext),vars(_varList->vars), methods(_methodList->methods), line(_line) {}
 
 	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
 };
-
-#pragma endregion
 
 //Интерфейс объявления переменной
 class IVarDeclaration
@@ -133,69 +265,9 @@ public:
 
 	const IType* typ;
 	const Symbol* name;
+	const int line;
 
-	IVarDeclaration(const IType* _typ, const Symbol* _name):typ(_typ), name(_name) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-};
-
-#pragma region MethodDeclarationList
-
-//Список методов
-class IMethodDeclarationList
-{
-public:
-	virtual rValue Accept(IVisitor *v) const = 0;
-};
-
-//Список объявлений методов с одним объявлением и хвостом
-class AddMethodDeclarationList : public IMethodDeclarationList
-{
-public:
-	const IMethodDeclarationList* methodList;
-	const IMethodDeclaration* m;
-
-	AddMethodDeclarationList(const IMethodDeclarationList* _methodList, const IMethodDeclaration* _m) : methodList(_methodList), m(_m) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-
-};
-
-//Пустой список объявлений методов
-class EmptyMethodDeclarationList : public IMethodDeclarationList
-{
-public:
-	EmptyMethodDeclarationList() {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-};
-
-#pragma endregion
-
-//Интерфейс объявления метода
-class IMethodDeclaration
-{
-public:
-
-	const IType* typ;
-	const Symbol* name;
-	const IArgumentList* argList;
-	const IVarDeclarationList* varList;
-	const IStatementList* stateList;
-	const IExp* e;
-
-	IMethodDeclaration(const IType* _typ, const Symbol* _name, const IArgumentList* _argList, const IVarDeclarationList* _varList, 
-						const IStatementList* _stateList, const IExp* _e) :
-						typ(_typ), name(_name),argList(_argList), varList(_varList), stateList(_stateList), e(_e) {}
+	IVarDeclaration(const IType* _typ, const Symbol* _name, const int _line):typ(_typ), name(_name), line(_line) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -209,7 +281,7 @@ public:
 class IArgumentList
 {
 public:
-	virtual rValue Accept(IVisitor *v) const = 0;
+	vector<const IVarDeclaration*> args;
 };
 
 //Список аргументов с хвостом
@@ -218,15 +290,12 @@ class AddArgumentList : public IArgumentList
 
 public:
 
-	const IType* typ;
-	const Symbol* name;
-	const IArgumentList* argList;
-
-	AddArgumentList(const IType* _typ, const Symbol* _name, const IArgumentList* _argList) :typ(_typ), name(_name), argList(_argList) {}
-
-	rValue Accept(IVisitor *v) const
+	AddArgumentList(const IType* _typ, const Symbol* _name, const IArgumentList* _argList, const int _line)
 	{
-		return v->visit(this);
+		args.push_back(new IVarDeclaration(_typ, _name, _line));
+		vector<const IVarDeclaration*> addedArgs = _argList->args;
+		for (auto arg : addedArgs)
+			args.push_back(arg);
 	}
 
 };
@@ -236,14 +305,9 @@ class OnlyArgumentList : public IArgumentList
 {
 public:
 
-	const IType* typ;
-	const Symbol* name;
-
-	OnlyArgumentList(const IType* _typ, const Symbol* _name):typ(_typ), name(_name) {}
-
-	rValue Accept(IVisitor *v) const
+	OnlyArgumentList(const IType* _typ, const Symbol* _name, const int _line)
 	{
-		return v->visit(this);
+		args.push_back(new IVarDeclaration(_typ, _name,_line));
 	}
 };
 
@@ -254,53 +318,32 @@ public:
 
 	ZeroArgumentList() {}
 
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-
 };
 
 #pragma endregion
 
-#pragma region StatementList
-
-//Интерфейс списка утверждений
-class IStatementList
+//Интерфейс объявления метода
+class IMethodDeclaration
 {
 public:
-	virtual rValue Accept(IVisitor *v) const = 0;
-};
 
-//Список утверждений с одним утверждением и хвостом
-class AddStatementList : public IStatementList
-{
-public:
-	const IStatement* s;
-	const IStatementList* stateList;
+	const IType* typ;
+	const Symbol* name;
+	vector<const IVarDeclaration*> args;
+	vector<const IVarDeclaration*> vars;
+	vector<const IStatement*> statements;
+	const IExp* e;
+	const int line;
 
-	AddStatementList(const IStatement* _s, const IStatementList* _stateList) : stateList(_stateList), s(_s) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-
-};
-
-//Пустой список объявлений методов
-class EmptyStatementList : public IStatementList
-{
-public:
-	EmptyStatementList() {}
+	IMethodDeclaration(const IType* _typ, const Symbol* _name, const IArgumentList* _argList, const IVarDeclarationList* _varList,
+		const IStatementList* _stateList, const IExp* _e, int _line) :
+		typ(_typ), name(_name), args(_argList->args), vars(_varList->vars), statements(_stateList->statements), e(_e), line(_line) {}
 
 	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
 };
-
-#pragma endregion
 
 #pragma region Statement
 
@@ -308,6 +351,8 @@ public:
 class IStatement
 {
 public:
+	const int line;
+	IStatement(const int _line) : line(_line) {};
 	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
@@ -315,9 +360,9 @@ public:
 class CompoundStatement : public IStatement
 {
 public:
-	const IStatementList* stateList;
+	vector<const IStatement*> statements;
 
-	CompoundStatement(const IStatementList* _stateList) :stateList(_stateList) {}
+	CompoundStatement(const IStatementList* _stateList, const int _line) :IStatement(_line),statements(_stateList->statements) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -333,7 +378,8 @@ public:
 	const IStatement* thenState;
 	const IStatement* elseState;
 
-	ConditionalStatement(const IExp* _ifExp, const IStatement* _thenState, const IStatement* _elseState) :ifExp(_ifExp), thenState(_thenState), elseState(_elseState) {}
+	ConditionalStatement(const IExp* _ifExp, const IStatement* _thenState, const IStatement* _elseState, const int _line) :
+												IStatement(_line), ifExp(_ifExp), thenState(_thenState), elseState(_elseState) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -348,7 +394,8 @@ public:
 	const IExp* conditionExp;
 	const IStatement* actionState;
 
-	CycleStatement(const IExp* _conditionExp, const IStatement* _actionState) :conditionExp(_conditionExp), actionState(_actionState) {}
+	CycleStatement(const IExp* _conditionExp, const IStatement* _actionState, const int _line) :IStatement(_line),
+																		conditionExp(_conditionExp), actionState(_actionState) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -362,7 +409,7 @@ class PrintStatement :public IStatement
 public:
 	const IExp* e;
 
-	PrintStatement(const IExp* _e) :e(_e) {}
+	PrintStatement(const IExp* _e, const int _line) :IStatement(_line), e(_e) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -377,7 +424,7 @@ public:
 	const Symbol* varName;
 	const IExp* e;
 
-	AssignStatement(const Symbol* _varName, const IExp* _e) :varName(_varName), e(_e) {}
+	AssignStatement(const Symbol* _varName, const IExp* _e, const int _line) :IStatement(_line), varName(_varName), e(_e) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -393,67 +440,13 @@ public:
 	const IExp* e;
 	const IExp* index;
 
-	AssignArrayElementStatement(const Symbol* _varName, const IExp* _index, const IExp* _e) :varName(_varName), index(_index), e(_e) {}
+	AssignArrayElementStatement(const Symbol* _varName, const IExp* _index, const IExp* _e, const int _line) :IStatement(_line),
+																						varName(_varName), index(_index), e(_e) {}
 
 	rValue Accept(IVisitor *v) const
 	{
 		return v->visit(this);
 	}
-};
-
-#pragma endregion
-
-#pragma region ExpressionList
-
-//Интерфейс списка утверждений
-class IExpList {
-public:
-	virtual rValue Accept(IVisitor *v) const = 0;
-};
-
-//Список выражений с хвостом
-class AddExpList : public IExpList {
-
-public:
-
-	const IExp* e1;
-	const IExpList* eList;
-
-	AddExpList(const IExp* _e1, const IExpList *_eList) :e1(_e1), eList(_eList) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-
-};
-
-//Список выражений, состоящий из одного элемента
-class OnlyExpList : public IExpList {
-
-public:
-	const IExp* e1;
-
-	OnlyExpList(const IExp* _e1) :e1(_e1) {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-};
-
-//Пустой список выражений
-class ZeroExpList : public IExpList {
-
-public:
-
-	ZeroExpList() {}
-
-	rValue Accept(IVisitor *v) const
-	{
-		return v->visit(this);
-	}
-
 };
 
 #pragma endregion
@@ -463,6 +456,9 @@ public:
 //Интерфейс выражения
 class IExp {
 public:
+	const int line;
+	IExp(const int _line) :line(_line) {};
+	IExp(): line(-1) {};
 	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
@@ -471,8 +467,9 @@ class BinopExp : public IExp {
 public:
 
 	const IExp *e1, *e2;
+	binOpType opType;
 
-	BinopExp(const IExp *_e1, const IExp *_e2) :e1(_e1), e2(_e2) {}
+	BinopExp(const IExp *_e1, const IExp *_e2, const int _line, binOpType _opType) :IExp(_line),e1(_e1), e2(_e2), opType(_opType){}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -486,7 +483,7 @@ public:
 
 	const IExp *e1, *e2;
 
-	GetArrayElementExp(const IExp *_e1, const IExp *_e2) :e1(_e1), e2(_e2) {}
+	GetArrayElementExp(const IExp *_e1, const IExp *_e2, const int _line) :IExp(_line), e1(_e1), e2(_e2) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -499,7 +496,7 @@ class GetLengthExp : public IExp
 {
 public:
 	const IExp *e1;
-	GetLengthExp(const IExp *_e1) :e1(_e1) {}
+	GetLengthExp(const IExp *_e1, const int _line) :IExp(_line), e1(_e1) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -514,9 +511,10 @@ public:
 
 	const IExp *e1;
 	const Symbol* methodName;
-	const IExpList *eList;
+	vector<const IExp*> args;
 
-	MethodExp(const IExp *_e1, const Symbol* _methodName, const IExpList* _eList) :methodName(_methodName),e1(_e1), eList(_eList) {}
+	MethodExp(const IExp *_e1, const Symbol* _methodName, const IExpList* _eList, const int _line) :
+								IExp(_line), methodName(_methodName),e1(_e1),args(_eList->exps) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -531,7 +529,7 @@ public:
 
 	const int num;
 
-	NumExp(const int _num) :num(_num) {}
+	NumExp(const int _num, const int _line) :IExp(_line), num(_num) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -545,7 +543,7 @@ public:
 
 	const bool flag;
 
-	BoolExp(const bool _flag) :flag(_flag) {}
+	BoolExp(const bool _flag, const int _line) :IExp(_line), flag(_flag) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -560,7 +558,7 @@ public:
 
 	const Symbol* id;
 
-	IDExp(const Symbol* _id):id(_id) {}
+	IDExp(const Symbol* _id, const int _line) :IExp(_line), id(_id) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -588,7 +586,7 @@ public:
 
 	const IExp *e1;
 
-	GetArrayExp(const IExp *_e1) :e1(_e1) {}
+	GetArrayExp(const IExp *_e1, const int _line) :IExp(_line), e1(_e1) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -603,7 +601,7 @@ public:
 
 	const Symbol* typName;//Название типа создаваемого объекта
 
-	NewObjectExp(const Symbol* _typName): typName(_typName) {}
+	NewObjectExp(const Symbol* _typName, const int _line) :IExp(_line), typName(_typName) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -618,7 +616,7 @@ public:
 
 	const IExp *e1;
 
-	NegativeExp(const IExp *_e1) : e1(_e1) {}
+	NegativeExp(const IExp *_e1, const int _line) :IExp(_line), e1(_e1) {}
 
 	rValue Accept(IVisitor *v) const
 	{
@@ -632,7 +630,7 @@ class EnclosedExp : public IExp
 public:
 
 	const IExp *e1;
-	EnclosedExp(const IExp *_e1) :e1(_e1) {}
+	EnclosedExp(const IExp *_e1, const int _line) :IExp(_line), e1(_e1) {}
 
 	rValue Accept(IVisitor *v) const
 	{

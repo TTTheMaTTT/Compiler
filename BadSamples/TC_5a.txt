@@ -38,7 +38,7 @@ class QS{
 	boolean cont02;
 	int aux03 ;
 	t = 0 ;
-	if (left < right){
+	if (left - right){           // HERE
 	    v = number[right] ;
 	    i = left - 1 ;
 	    j = right ;
@@ -92,9 +92,8 @@ class QS{
 
     // Initialize array of integers
     public int Init(int sz){
-	boolean ds;
 	size = sz ;
-	number = new int[ds] ;	// HERE
+	number = new int[sz] ;
 	
 	number[0] = 20 ;
 	number[1] = 7  ; 

@@ -1,6 +1,6 @@
 class QuickSort{
     public static void main(String[] a){
-	System.out.println(new int[5].Start(10));	// HERE
+	System.out.println(new QS().Start(10));
     }
 }
 
@@ -92,8 +92,9 @@ class QS{
 
     // Initialize array of integers
     public int Init(int sz){
+	boolean ds;
 	size = sz ;
-	number = new int[sz] ;
+	number = new int[ds] ;	// HERE
 	
 	number[0] = 20 ;
 	number[1] = 7  ; 

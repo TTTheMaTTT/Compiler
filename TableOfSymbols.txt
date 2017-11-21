@@ -1,15 +1,17 @@
 Table of Symbols
 {
 
-	MainClass TreeVisitor
+	MainClass QuickSort
 	{
 		String a
 	}
 
-	Class TV
+	Class QS
 	{
 
 	Variables:
+		array of int number
+		int size
 
 	Methods:
 		int Start
@@ -17,301 +19,50 @@ Table of Symbols
 
 
 		Arguments:
+			int sz
 
 		Variables:
-			Tree root
-			bool ntb
-			int nti
-			MyVisitor v
+			int aux01
 		}
 
-	}
-
-	Class Tree
-	{
-
-	Variables:
-		Tree left
-		Tree right
-		int key
-		bool has_left
-		bool has_right
-		Tree my_null
-
-	Methods:
-		bool Init
+		int Sort
 		{
 
 
 		Arguments:
-			int v_key
+			int left
+			int right
 
 		Variables:
+			int v
+			int i
+			int j
+			int nt
+			int t
+			QS QS
+			bool cont01
+			bool cont02
+			int aux03
 		}
 
-		bool SetRight
-		{
-
-
-		Arguments:
-			Tree rn
-
-		Variables:
-		}
-
-		bool SetLeft
-		{
-
-
-		Arguments:
-			Tree ln
-
-		Variables:
-		}
-
-		Tree GetRight
+		int Print
 		{
 
 
 		Arguments:
 
 		Variables:
+			int j
 		}
 
-		Tree GetLeft
+		int Init
 		{
 
 
 		Arguments:
+			int sz
 
 		Variables:
-		}
-
-		int GetKey
-		{
-
-
-		Arguments:
-
-		Variables:
-		}
-
-		bool SetKey
-		{
-
-
-		Arguments:
-			int v_key
-
-		Variables:
-		}
-
-		bool GetHas_Right
-		{
-
-
-		Arguments:
-
-		Variables:
-		}
-
-		bool GetHas_Left
-		{
-
-
-		Arguments:
-
-		Variables:
-		}
-
-		bool SetHas_Left
-		{
-
-
-		Arguments:
-			bool val
-
-		Variables:
-		}
-
-		bool SetHas_Right
-		{
-
-
-		Arguments:
-			bool val
-
-		Variables:
-		}
-
-		bool Compare
-		{
-
-
-		Arguments:
-			int num1
-			int num2
-
-		Variables:
-			bool ntb
-			int nti
-		}
-
-		bool Insert
-		{
-
-
-		Arguments:
-			int v_key
-
-		Variables:
-			Tree new_node
-			bool ntb
-			Tree current_node
-			bool cont
-			int key_aux
-		}
-
-		bool Delete
-		{
-
-
-		Arguments:
-			int v_key
-
-		Variables:
-			Tree current_node
-			Tree parent_node
-			bool cont
-			bool found
-			bool ntb
-			bool is_root
-			int key_aux
-		}
-
-		bool Remove
-		{
-
-
-		Arguments:
-			Tree p_node
-			Tree c_node
-
-		Variables:
-			bool ntb
-			int auxkey1
-			int auxkey2
-		}
-
-		bool RemoveRight
-		{
-
-
-		Arguments:
-			Tree p_node
-			Tree c_node
-
-		Variables:
-			bool ntb
-		}
-
-		bool RemoveLeft
-		{
-
-
-		Arguments:
-			Tree p_node
-			Tree c_node
-
-		Variables:
-			bool ntb
-		}
-
-		int Search
-		{
-
-
-		Arguments:
-			int v_key
-
-		Variables:
-			Tree current_node
-			int ifound
-			bool cont
-			int key_aux
-		}
-
-		bool Print
-		{
-
-
-		Arguments:
-
-		Variables:
-			bool ntb
-			Tree current_node
-		}
-
-		bool RecPrint
-		{
-
-
-		Arguments:
-			Tree node
-
-		Variables:
-			bool ntb
-		}
-
-		int accept
-		{
-
-
-		Arguments:
-			Visitor v
-
-		Variables:
-			int nti
-		}
-
-	}
-
-	Class Visitor
-	{
-
-	Variables:
-		Tree l
-		Tree r
-
-	Methods:
-		int visit
-		{
-
-
-		Arguments:
-			Tree n
-
-		Variables:
-			int nti
-		}
-
-	}
-
-	Class MyVisitor
-	{
-
-	Variables:
-
-	Methods:
-		int visit
-		{
-
-
-		Arguments:
-			Tree n
-
-		Variables:
-			int nti
 		}
 
 	}

@@ -8,14 +8,12 @@ public:
 		rValue r;
 		depth = 0;
 		fout = ofstream("TableOfSymbols.txt");
-		fout << "Table of Symbols" << endl << "{" << endl<< endl;
+		fout << "Table of Symbols" << endl << "{" << endl << endl;
 		const Info* mClassTable = n->mClass->Accept(this).info;
-		const Info* classesTables = n->classList->Accept(this).info;
 
-		r.info = new ContainerInfo(mClassTable->GetNestedInfo());
-		vector<const Info*> classesInfos = classesTables->GetNestedInfo();
-		for (int i = 0; i < classesInfos.size(); i++)
-			r.info->PushNestedInfo(classesInfos[i]);
+		r.info = new ContainerInfo({mClassTable});
+		for (auto classDecl: n->classes)
+			r.info->PushNestedInfo(classDecl->Accept(this).info);
 
 		fout << "}" << endl;
 		fout.close();
@@ -44,70 +42,31 @@ public:
 		return table;
 	}
 
-	rValue visit(const AddClassDeclarationList* n)
-	{
-		rValue table;
-
-		const Info* classesListTable = n->classList->Accept(this).info;
-		const Info* classTable = n->c->Accept(this).info;
-		table.info = new ContainerInfo(classesListTable->GetNestedInfo());
-		table.info->PushNestedInfo(classTable);
-
-		return table;
-	}
-
-	rValue visit(const EmptyClassDeclarationList* n)
-	{
-		rValue table;
-
-		table.info = new ContainerInfo({});
-
-		return table;
-	}
-
 	rValue visit(const IClassDeclaration* n)
 	{
 		rValue table;
+		
+		table.info = new ClassInfo(n->name, {});
+		
 		depth ++;
 		MakeOffset();
 		fout << "Class " <<n->name->str<< endl;
 		MakeOffset();
 		fout << "{" << endl << endl;
 		MakeOffset();
+
 		fout << "Variables:"<<endl;
-		const Info* varListTable = n->varList->Accept(this).info;
+		for (auto var : n->vars)
+			table.info->PushNestedInfo(var->Accept(this).info);
 		fout << endl;
 		MakeOffset();
+
 		fout << "Methods:" << endl;
-		const Info* methodListTables = n->methodList->Accept(this).info;
+		for (auto method : n->methods)
+			table.info->PushNestedInfo(method->Accept(this).info);
 		MakeOffset();
 		fout << "}" << endl<<endl;
 		depth--;
-
-		table.info = new ClassInfo(n->name, varListTable->GetNestedInfo());
-		vector<const Info*> methodInfos = methodListTables->GetNestedInfo();
-		for (int i = 0; i < methodInfos.size(); i++)
-			table.info->PushNestedInfo(methodInfos[i]);
-		return table;
-	}
-
-	rValue visit(const AddVarDeclarationList* n)
-	{
-		rValue table;
-
-		const Info* varListTable = n->varList->Accept(this).info;
-		const Info* varTable = n->var->Accept(this).info;
-		table.info = new ContainerInfo( varListTable->GetNestedInfo());
-		table.info->PushNestedInfo(varTable);
-
-		return table;
-	}
-
-	rValue visit(const 	EmptyVarDeclarationList* n)
-	{
-		rValue table;
-
-		table.info = new ContainerInfo({});
 
 		return table;
 	}
@@ -124,30 +83,11 @@ public:
 		return table;
 	}
 
-	rValue visit(const AddMethodDeclarationList* n)
-	{
-		rValue table;
-
-		const Info* methodListTable = n->methodList->Accept(this).info;
-		const Info* methodTable = n->m->Accept(this).info;
-		table.info = new ContainerInfo(methodListTable->GetNestedInfo());
-		table.info->PushNestedInfo(methodTable);
-
-		return table;
-	}
-
-	rValue visit(const EmptyMethodDeclarationList* n)
-	{
-		rValue table;
-
-		table.info = new ContainerInfo({});
-
-		return table;
-	}
-
 	rValue visit(const IMethodDeclaration* n)
 	{
 		rValue table;
+		table.info = new MethodInfo(n->typ, n->name, {});
+
 		depth++;
 		MakeOffset();
 		fout << n->typ->typeName->str<<" "<< n->name->str << endl;
@@ -155,72 +95,24 @@ public:
 		fout << "{" << endl << endl;
 		fout << endl;
 		MakeOffset();
+
 		fout << "Arguments:" << endl;
-		const Info* argListTable = n->argList->Accept(this).info;
+		for (auto arg : n->args)
+		{
+			Info* argInfo = arg->Accept(this).info;
+			argInfo->SetInfoType("arg");
+			table.info->PushNestedInfo(argInfo);
+		}
 		fout << endl;
 		MakeOffset();
+
 		fout << "Variables:" << endl;
-		const Info* varListTables = n->varList->Accept(this).info;
+		for (auto var : n->vars)
+			table.info->PushNestedInfo(var->Accept(this).info);
 		MakeOffset();
 		fout << "}" << endl << endl;
 		depth--;
 
-		table.info = new MethodInfo(n->typ,n->name, argListTable->GetNestedInfo());
-		vector<const Info*> varInfos = varListTables->GetNestedInfo();
-		for (int i = 0; i < varInfos.size(); i++)
-			table.info->PushNestedInfo(varInfos[i]);
-		return table;
-	}
-
-	rValue visit(const AddArgumentList* n)
-	{
-		rValue table;
-
-		depth++;
-		MakeOffset();
-		fout << n->typ->typeName->str << " " << n->name->str << endl;
-		depth--;
-
-		const Info* argListTable = n->argList->Accept(this).info;
-		table.info = new ContainerInfo({new VariableInfo(n->typ,n->name)});
-		vector<const Info*> argInfos = argListTable->GetNestedInfo();
-		for (int i = 0; i < argInfos.size(); i++)
-			table.info->PushNestedInfo(argInfos[i]);
-
-		return table;
-	}
-
-	rValue visit(const OnlyArgumentList* n)
-	{
-		rValue table;
-
-		depth++;
-		MakeOffset();
-		fout << n->typ->typeName->str << " " << n->name->str << endl;
-		depth--;
-
-		table.info = new ContainerInfo({ new VariableInfo(n->typ,n->name) });
-		return table;
-	}
-
-	rValue visit(const ZeroArgumentList* n)
-	{
-		rValue table;
-
-		table.info = new ContainerInfo({});
-
-		return table;
-	}
-
-	rValue visit(const AddStatementList* n)
-	{
-		rValue table;
-		return table;
-	}
-
-	rValue visit(const EmptyStatementList* n)
-	{
-		rValue table;
 		return table;
 	}
 
@@ -255,24 +147,6 @@ public:
 	}
 
 	rValue visit(const AssignArrayElementStatement* n)
-	{
-		rValue table;
-		return table;
-	}
-
-	rValue visit(const AddExpList* n)
-	{
-		rValue table;
-		return table;
-	}
-
-	rValue visit(const OnlyExpList* n)
-	{
-		rValue table;
-		return table;
-	}
-
-	rValue visit(const ZeroExpList* n)
 	{
 		rValue table;
 		return table;

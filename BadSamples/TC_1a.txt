@@ -18,11 +18,9 @@ class TV {
 }
 
 
+class Visitor extends MyVisitor {
+}
 
-class Visitor {
 
-    public int visit(Tree n, Tree2 a){       // HERE
-		return 0;
-    }
-
+class MyVisitor extends Visitor {
 }
