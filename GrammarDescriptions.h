@@ -229,8 +229,7 @@ public:
 	const Symbol* argName;//Имя аргумента функции main типа String[]
 	const IStatement* statement;
 
-	IMainClass(const Symbol* _name, const Symbol* _argName, const IStatement* _statement) : 
-																name(_name), argName(_argName), statement(_statement) {}
+	IMainClass(const Symbol* _name, const Symbol* _argName, const IStatement* _statement) : name(_name), argName(_argName), statement(_statement) {};
 
 	rValue Accept(IVisitor *v) const
 	{

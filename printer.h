@@ -161,6 +161,19 @@ public:
 		return name;
 	}
 
+	rValue visit(const TernExp* n)
+	{
+		rValue name;
+		name.sValue = CompoundString("TernExp", expressionCount);
+		expressionCount++;
+		string child1 = n->e1->Accept(this).sValue;
+		string child2 = n->e2->Accept(this).sValue;
+		string child3 = n->e3->Accept(this).sValue;
+		fout << name.sValue << "->" << child1 << endl << name.sValue << "->" << child2 << endl<< 
+				name.sValue << "->" << child3 << endl;
+		return name;
+	}
+
 	rValue visit(const GetArrayElementExp* n)
 	{
 		rValue name;

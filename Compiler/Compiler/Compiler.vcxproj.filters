@@ -48,6 +48,12 @@
     <ClInclude Include="..\..\Frame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\X86MiniJavaFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AR_Visitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lexer1.cpp">

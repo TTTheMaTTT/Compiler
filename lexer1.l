@@ -75,6 +75,7 @@ System.out.println return PRINTWORD;
 
 String return STRINGWORD;
 int return INTWORD;
+short return SHORTWORD;
 boolean return BOOLWORD;
 
 [a-zA-Z][a-zA-Z0-9_]* {yylval.Symbol=getIntern(yytext) ; return IDENTIFIER;};

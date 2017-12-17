@@ -62,6 +62,12 @@ public:
 		return infoType;
 	}
 
+	//Вернуть фрейм
+	virtual const IFrame* GetFrame() const
+	{
+		return nullptr;
+	}
+
 	//Установить тип информации
 	virtual void SetInfoType(string _infoType)
 	{
@@ -208,4 +214,25 @@ public:
 	{
 		nestedInfo.push_back(newInfo);
 	}
+};
+
+//Информация о фрейме
+class FrameInfo :public Info
+{
+public:
+
+	FrameInfo(const IFrame* _frame) :frame(_frame),Info(nullptr)
+	{
+		infoType = "frame";
+	}
+
+	//Вернуть фрейм
+	const IFrame* GetFrame() const
+	{
+		return frame;
+	}
+
+private:
+	const IFrame* frame;//Информация о фрейме
+
 };

@@ -158,6 +158,12 @@ public:
 		return table;
 	}
 
+	rValue visit(const TernExp* n)
+	{
+		rValue table;
+		return table;
+	}
+
 	rValue visit(const GetArrayElementExp* n)
 	{
 		rValue table;

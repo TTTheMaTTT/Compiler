@@ -9,6 +9,9 @@
 #include <unordered_map>
 
 #include "Symbol.h"
+#include "Access.h"
+#include "Frame.h"
+
 extern Symbol* getIntern(const std::string& src);
 #include "Table.h"
 #include "GrammarDeclarations.h"
@@ -17,12 +20,14 @@ extern Symbol* getIntern(const std::string& src);
 #include "VarTableCreator.h"
 #include "Printer.h"
 #include "TypeChecker.h"
+#include "AR_Visitor.h"
 
 using namespace std;
 
 extern const Program* prog;
 VarTableCreator v;
 TypeChecker tChecker;
+
 Printer p;
 
 // this function is called syntax parser
@@ -50,7 +55,12 @@ int main( int argc, char* argv[] )
 	p.visit(prog);
 	rValue symbolTable=v.visit(prog);//получаем таблицу символов
 	tChecker.SetSymbolTable(symbolTable.info);
-	rValue information = tChecker.visit(prog);
+	rValue typeCheckInfo = tChecker.visit(prog);
+	if (tChecker.errorCount == 0)
+	{
+		ARCreator arCreator;
+		rValue arInformation = arCreator.visit(prog);
+	}
 	system("pause");//Не сразу закрываем консоль
 	return 0;
 }

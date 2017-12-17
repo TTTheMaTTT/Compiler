@@ -73,9 +73,9 @@ static int prevErrorLine=0;
 %token FOBRACE FEBRACE SQOBRACE SQEBRACE OBRACE EBRACE
 %token PLUS MINUS MULTIPLY MOD
 %token SEMICOLON COMMA DOT
-%token NOT OR AND LESS GREATER EQUAL IFWORD ELSEWORD WHILEWORD
+%token NOT OR AND LESS GREATER EQUAL IFWORD ELSEWORD WHILEWORD INTERROGATION COLON
 %token ASSIGN
-%token EOFL STRINGWORD BOOLWORD INTWORD CLASSWORD NEWWORD THISWORD PUBLICWORD PRIVATEWORD STATICWORD VOIDWORD RETURNWORD MAINWORD 
+%token EOFL STRINGWORD BOOLWORD INTWORD SHORTWORD CLASSWORD NEWWORD THISWORD PUBLICWORD PRIVATEWORD STATICWORD VOIDWORD RETURNWORD MAINWORD 
 %token EXTENSIONWORD PRINTWORD LENGTHWORD TRUE FALSE
 %token <Symbol> IDENTIFIER 
 %token <Int> NUM
@@ -84,6 +84,7 @@ static int prevErrorLine=0;
 %nonassoc AND
 %nonassoc OR
 %nonassoc LESS GREATER EQUAL
+%nonassoc INTERROGATION COLON
 %left PLUS MINUS
 %left MULTIPLY MOD
 %right NOT
@@ -173,9 +174,13 @@ ArgumentList:
 Type:
 	INTWORD SQOBRACE SQEBRACE {$$=new IType(getIntern("array of int"));}
 	|
+	SHORTWORD SQOBRACE SQEBRACE {$$=new IType(getIntern("array of short"));}
+	|
 	BOOLWORD {$$=new IType(getIntern("bool"));}
 	|
 	INTWORD {$$=new IType(getIntern("int"));}
+	|
+	SHORTWORD {$$=new IType(getIntern("short"));}
 	|
 	IDENTIFIER {$$=new IType($1);}
 	;
@@ -230,6 +235,8 @@ Expression:
 	Expression GREATER Expression {$$=new BinopExp($1,$3,yylloc.first_line,binOpType::GREATER);}
 	|
 	Expression EQUAL Expression {$$=new BinopExp($1,$3,yylloc.first_line,binOpType::EQUAL);}
+	|
+	Expression COLON Expression INTERROGATION Expression {$$=new TernExp($1,$3,$5);}
 	|
 	Expression SQOBRACE Expression SQEBRACE {$$=new GetArrayElementExp($1,$3,yylloc.first_line);}
 	|

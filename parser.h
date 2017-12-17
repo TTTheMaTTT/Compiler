@@ -74,27 +74,30 @@ extern int yydebug;
     IFWORD = 277,
     ELSEWORD = 278,
     WHILEWORD = 279,
-    ASSIGN = 280,
-    EOFL = 281,
-    STRINGWORD = 282,
-    BOOLWORD = 283,
-    INTWORD = 284,
-    CLASSWORD = 285,
-    NEWWORD = 286,
-    THISWORD = 287,
-    PUBLICWORD = 288,
-    PRIVATEWORD = 289,
-    STATICWORD = 290,
-    VOIDWORD = 291,
-    RETURNWORD = 292,
-    MAINWORD = 293,
-    EXTENSIONWORD = 294,
-    PRINTWORD = 295,
-    LENGTHWORD = 296,
-    TRUE = 297,
-    FALSE = 298,
-    IDENTIFIER = 299,
-    NUM = 300
+    INTERROGATION = 280,
+    COLON = 281,
+    ASSIGN = 282,
+    EOFL = 283,
+    STRINGWORD = 284,
+    BOOLWORD = 285,
+    INTWORD = 286,
+    SHORTWORD = 287,
+    CLASSWORD = 288,
+    NEWWORD = 289,
+    THISWORD = 290,
+    PUBLICWORD = 291,
+    PRIVATEWORD = 292,
+    STATICWORD = 293,
+    VOIDWORD = 294,
+    RETURNWORD = 295,
+    MAINWORD = 296,
+    EXTENSIONWORD = 297,
+    PRINTWORD = 298,
+    LENGTHWORD = 299,
+    TRUE = 300,
+    FALSE = 301,
+    IDENTIFIER = 302,
+    NUM = 303
   };
 #endif
 
@@ -123,7 +126,7 @@ union YYSTYPE
 	const IExpList* ExpList;
 	const IExp* Exp;
 
-#line 127 "parser.h" /* yacc.c:1909  */
+#line 130 "parser.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

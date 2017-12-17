@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Access.h" />
+    <ClInclude Include="..\..\AR_Visitor.h" />
     <ClInclude Include="..\..\Frame.h" />
     <ClInclude Include="..\..\GrammarDeclarations.h" />
     <ClInclude Include="..\..\GrammarDescriptions.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="..\..\TypeChecker.h" />
     <ClInclude Include="..\..\VarTableCreator.h" />
     <ClInclude Include="..\..\Visitor.h" />
+    <ClInclude Include="..\..\X86MiniJavaFrame.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lexer1.cpp" />
