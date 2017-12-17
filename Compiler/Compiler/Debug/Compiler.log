@@ -1,0 +1,9 @@
+﻿  source.cpp
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\experiment\typechecker.h(134): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\experiment\typechecker.h(198): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\experiment\typechecker.h(213): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\experiment\typechecker.h(260): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\experiment\typechecker.h(275): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\experiment\typechecker.h(283): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\experiment\typechecker.h(789): warning C4018: '<': signed/unsigned mismatch
+  Compiler.vcxproj -> D:\Chisto Moya Papka!!!\Works\Phystech\Теория компиляторов\Programmes\Experiment\Compiler\Debug\Compiler.exe

@@ -1,0 +1,28 @@
+Table of Symbols
+{
+
+	MainClass Factorial
+	{
+		String a
+	}
+
+	Class Fac
+	{
+
+	Variables:
+
+	Methods:
+		int ComputeFac
+		{
+
+
+		Arguments:
+			int num
+
+		Variables:
+			int num_aux
+		}
+
+	}
+
+}

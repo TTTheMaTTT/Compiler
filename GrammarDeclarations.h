@@ -37,6 +37,7 @@ class OnlyExpList;
 class ZeroExpList;
 class IExp;
 class BinopExp;
+class TernExp;
 class GetArrayElementExp;
 class GetLengthExp;
 class MethodExp;

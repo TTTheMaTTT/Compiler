@@ -1,0 +1,28 @@
+digraph G
+{
+MethodExp0->NewObjExp1
+MethodExp0->NumExp2 [label="method exp"]
+PrintStatement0->MethodExp0
+MainClass->PrintStatement0
+Program ->MainClass
+Method0->Var0
+Method0->Var1
+BinopExp4->IDExp5
+BinopExp4->NumExp6
+AssignStatement2->NumExp7
+MethodExp11->ThisExp12
+BinopExp13->IDExp14
+BinopExp13->NumExp15
+MethodExp11->BinopExp13 [label="method exp"]
+EnclExp10->MethodExp11
+BinopExp8->IDExp9
+BinopExp8->EnclExp10
+AssignStatement3->BinopExp8
+ConditionalStatement1->BinopExp4
+ConditionalStatement1->AssignStatement2
+ConditionalStatement1->AssignStatement3
+Method0->ConditionalStatement1
+Method0->IDExp3 [label="return"]
+Class0->Method0
+Program->Class0
+}

@@ -23,6 +23,7 @@ public:
 	virtual rValue visit(const PrintStatement* n) = 0;
 	virtual rValue visit(const AssignStatement* n) = 0;
 	virtual rValue visit(const AssignArrayElementStatement* n) = 0;
+	virtual rValue visit(const TernExp* n) = 0;
 	virtual rValue visit(const BinopExp* n) = 0;
 	virtual rValue visit(const GetArrayElementExp* n) = 0;
 	virtual rValue visit(const GetLengthExp* n) = 0;

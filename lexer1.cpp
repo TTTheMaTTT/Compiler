@@ -690,7 +690,7 @@ void action(int yyact, int yyleng)
  * down here because we want the user's section 1 to have been scanned first.
  * The user has a chance to override it with an option.
  */
-#include <unistd.h>
+//#include <unistd.h>
 #endif
     
 #ifndef YY_EXTRA_TYPE
@@ -1774,7 +1774,7 @@ static void yy_load_buffer_state  (void)
         b->yy_bs_column = 0;
     }
 
-        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+	b->yy_is_interactive = 0;// file ? (isatty(fileno(file)) > 0) : 0;
     
 	errno = oerrno;
 }

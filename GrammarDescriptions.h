@@ -462,6 +462,20 @@ public:
 	virtual rValue Accept(IVisitor *v) const = 0;
 };
 
+//Тернарная операция
+class TernExp : public IExp {
+public:
+
+	const IExp *e1, *e2, *e3;
+
+	TernExp(const IExp *_e1, const IExp *_e2, const IExp *_e3) :e1(_e1), e2(_e2), e3(_e3) {}
+
+	rValue Accept(IVisitor *v) const
+	{
+		return v->visit(this);
+	}
+};
+
 //Бинарная операция
 class BinopExp : public IExp {
 public:

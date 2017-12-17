@@ -41,10 +41,10 @@ int yywrap()
 	return 1;
 }
 
-int main()
+int main( int argc, char* argv[] )
 {
 	setlocale(LC_ALL, "rus"); // корректное отображение Кириллицы
-	yyin = fopen("file.txt", "r");
+	fopen_s( &yyin, argv[1], "r");
 	yyparse();
 	fclose(yyin);
 	p.visit(prog);

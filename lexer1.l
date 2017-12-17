@@ -83,6 +83,8 @@ boolean return BOOLWORD;
 \+ return PLUS;
 \- return MINUS;
 \* return MULTIPLY;
+\: return COLON;
+\? return INTERROGATION;
 % return MOD;
 \< return LESS;
 \> return GREATER;

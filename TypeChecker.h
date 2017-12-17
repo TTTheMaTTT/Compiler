@@ -99,9 +99,9 @@ public:
 	rValue visit(const Program* n)
 	{
 		rValue r;
-		fout = ofstream("TypeCheck.txt");
+		//cout = ofstream("TypeCheck.txt");
 		
-		fout << "Проверка начата" << endl;
+		cout << "Проверка начата" << endl;
 
 		const Info* myInfo = symbolTable;
 
@@ -116,10 +116,10 @@ public:
 				continue;//Рассматриваемый класс ни от кого не наследуется
 			int hierarchyOutput = CreateHierarchyBond(classDecl->name, classDecl->ext->parentClassName);
 			if (hierarchyOutput == -2)
-				fout << classDecl->ext->line << " - " << "Неизвестный наследумый класс " << 
+				cout << classDecl->ext->line << " - " << "Неизвестный наследумый класс " << 
 																					classDecl->ext->parentClassName->str << endl;
 			else if (hierarchyOutput==-1)
-				fout << classDecl->ext->line << " - " << "Наследующий класс " <<classDecl->name->str<<
+				cout << classDecl->ext->line << " - " << "Наследующий класс " <<classDecl->name->str<<
 										" является предком наследуемого класса "<< classDecl->ext->parentClassName->str << endl;
 		}
 
@@ -140,9 +140,9 @@ public:
 
 		ClearSymbolTable();
 
-		fout << "Проверка закончена" << endl;
+		cout << "Проверка закончена" << endl;
 
-		fout.close();
+		//cout.close();
 		return r;
 	}
 
@@ -172,7 +172,7 @@ public:
 		ClassHierarchy* classInHierarchy = cHierarchy.FindDescendant(myInfo->GetName());
 		if (classInHierarchy == nullptr)
 		{
-			fout << n->line << " - " << "Класс " << n->name->str <<" не попал в иерархию классов! И это странно"<< endl;
+			cout << n->line << " - " << "Класс " << n->name->str <<" не попал в иерархию классов! И это странно"<< endl;
 		}
 
 		if (classInHierarchy->parent != nullptr)
@@ -188,7 +188,7 @@ public:
 		{
 			const IVarDeclaration* var = n->vars[i];
 			if (HaveVar(nestedInfo[i]->GetName()))
-				fout << var->line << " - " << "переменная " <<var->name->str << 
+				cout << var->line << " - " << "переменная " <<var->name->str << 
 											" уже есть в области видимости класса " <<n->name->str<< endl;
 			else
 				checkedVars.push_back(var->name);
@@ -199,7 +199,7 @@ public:
 		{
 			const IMethodDeclaration* method = n->methods[i];
 			if (HaveMethod(nestedInfo[varSize+i]))
-				fout << method->line << " - " << "метод " << method->name->str <<
+				cout << method->line << " - " << "метод " << method->name->str <<
 							" с указанными аргументами уже есть в области видимости класса " << n->name->str << endl;
 			else
 				checkedMethods.push_back(nestedInfo[varSize + i]);
@@ -227,7 +227,7 @@ public:
 
 		const Info* myInfo = pointInfo;
 		if (!TypeIsExisting(n->typ->typeName))
-			fout << n->line << " - " << "Неизвестный тип " << n->typ->typeName->str <<" переменной " << n->name->str << endl;
+			cout << n->line << " - " << "Неизвестный тип " << n->typ->typeName->str <<" переменной " << n->name->str << endl;
 
 		return table;
 	}
@@ -240,7 +240,7 @@ public:
 
 		const Info* myInfo = pointInfo;
 		if (!TypeIsExisting(n->typ->typeName))
-			fout << n->line << " - " << "Неизвестный тип " << n->typ->typeName->str << " метода " << n->name->str << endl;
+			cout << n->line << " - " << "Неизвестный тип " << n->typ->typeName->str << " метода " << n->name->str << endl;
 
 		checkedVars.clear();
 		vector<const Info*> nestedInfo = myInfo->GetNestedInfo();
@@ -250,7 +250,7 @@ public:
 		{
 			const IVarDeclaration* var = n->args[i];
 			if (HaveVar(nestedInfo[i]->GetName()))
-				fout << var->line << " - " << "переменная " << var->name->str <<
+				cout << var->line << " - " << "переменная " << var->name->str <<
 				" уже есть в области видимости метода " << n->name->str << endl;
 			else
 				checkedVars.push_back(var->name);
@@ -261,7 +261,7 @@ public:
 		{
 			const IVarDeclaration* var = n->vars[i];
 			if (HaveVar(nestedInfo[argSize+i]->GetName()))
-				fout << var->line << " - " << "переменная " << var->name->str <<
+				cout << var->line << " - " << "переменная " << var->name->str <<
 				" уже есть в области видимости метода " << n->name->str << endl;
 			else
 				checkedVars.push_back(var->name);
@@ -295,7 +295,7 @@ public:
 		}
 
 		if (n->typ->typeName!=n->e->Accept(this).info->GetType()->typeName)
-			fout << n->e->line << " - " << "Тип метода " << n->name->str << " не соответствует типу его возвращаемого значения"<< endl;
+			cout << n->e->line << " - " << "Тип метода " << n->name->str << " не соответствует типу его возвращаемого значения"<< endl;
 
 		return table;
 	}
@@ -318,7 +318,7 @@ public:
 		rValue table;
 
 		if (n->ifExp->Accept(this).info->GetType()->typeName!=getIntern("bool"))
-			fout << n->ifExp->line << " - " << "условное выражение должно иметь тип bool" <<endl;
+			cout << n->ifExp->line << " - " << "условное выражение должно иметь тип bool" <<endl;
 
 		n->thenState->Accept(this);
 		n->elseState->Accept(this);
@@ -332,7 +332,7 @@ public:
 		rValue table;
 
 		if (n->conditionExp->Accept(this).info->GetType()->typeName != getIntern("bool"))
-			fout << n->conditionExp->line << " - " << "условие цикла должно иметь тип bool" << endl;
+			cout << n->conditionExp->line << " - " << "условие цикла должно иметь тип bool" << endl;
 
 		n->actionState->Accept(this);
 
@@ -347,7 +347,7 @@ public:
 		//fout << "Я в PrintStatement" << endl;
 		const Symbol* printType = n->e->Accept(this).info->GetType()->typeName;
 		if (printType!=getIntern("int") && printType != getIntern("bool") && printType != getIntern("String"))
-			fout << n->e->line << " - " << "Нельзя вывести объект с типом " <<printType->str<< endl;
+			cout << n->e->line << " - " << "Нельзя вывести объект с типом " <<printType->str<< endl;
 		return table;
 	}
 
@@ -361,9 +361,9 @@ public:
 
 		const Info* expInfo = n->e->Accept(this).info;
 		if (assignedVar==nullptr)
-			fout << n->line << " - " << "Неизвестная переменная " << n->varName->str << endl;
+			cout << n->line << " - " << "Неизвестная переменная " << n->varName->str << endl;
 		else if (assignedVar->GetType()->typeName!=expInfo->GetType()->typeName)
-			fout << n->line << " - " << "Типы переменной " << n->varName->str <<" и присваемого ей выражения не совпадают"<< endl;
+			cout << n->line << " - " << "Типы переменной " << n->varName->str <<" и присваемого ей выражения не совпадают"<< endl;
 
 		return table;
 	}
@@ -377,15 +377,15 @@ public:
 		const Info* indexInfo = n->index->Accept(this).info;
 		const Info* expInfo = n->e->Accept(this).info; 
 		if (assignedVar == nullptr)
-			fout << n->line << " - " << "Неизвестная переменная " << n->varName->str << endl;
+			cout << n->line << " - " << "Неизвестная переменная " << n->varName->str << endl;
 		else
 		{
 			if (assignedVar->GetType()->typeName != getIntern("array of int"))
-				fout << n->line << " - " << "Тип переменной " << n->varName->str << " не целочисленный массив" << endl;
+				cout << n->line << " - " << "Тип переменной " << n->varName->str << " не целочисленный массив" << endl;
 			if (indexInfo->GetType()->typeName != getIntern("int"))
-				fout << n->line << " - " << "Тип индекса не int" << endl;
+				cout << n->line << " - " << "Тип индекса не int" << endl;
 			if (expInfo->GetType()->typeName != getIntern("int"))
-				fout << n->line << " - " << "Тип присваемого значения не int" << endl;
+				cout << n->line << " - " << "Тип присваемого значения не int" << endl;
 		}
 
 		return table;
@@ -401,25 +401,25 @@ public:
 		if (static_cast<int>(n->opType) < 4)//совершаем арифметическое действие
 		{
 			if (typeName1 != typeName2 || typeName1 != getIntern("int"))
-				fout << n->line << " - " << "Арифметическое действие производится не над int`ами" << endl;
+				cout << n->line << " - " << "Арифметическое действие производится не над int`ами" << endl;
 			table.info = new Info(new IType(getIntern("int")));
 		}
 		else if (static_cast<int>(n->opType) < 6)//And и or
 		{
 			if (typeName1 != typeName2 || typeName1 != getIntern("bool"))
-				fout << n->line << " - " << "Логическое выражение составляется не из bool'ов" << endl;
+				cout << n->line << " - " << "Логическое выражение составляется не из bool'ов" << endl;
 			table.info = new Info(new IType(getIntern("bool")));
 		}
 		else if (static_cast<int>(n->opType) < 8)//<, >
 		{
 			if (typeName1 != typeName2 || typeName1 != getIntern("int"))
-				fout << n->line << " - " << "Сравнение производится не над int`ами" << endl;
+				cout << n->line << " - " << "Сравнение производится не над int`ами" << endl;
 			table.info = new Info(new IType(getIntern("bool")));
 		}
 		else //==
 		{
 			if (typeName1 != typeName2)
-				fout << n->line << " - " << "Проверяется равенство объектов разных типов " <<
+				cout << n->line << " - " << "Проверяется равенство объектов разных типов " <<
 																				typeName1->str<<" и "<<typeName2->str<< endl;
 			table.info = new Info(new IType(getIntern("bool")));
 		}
@@ -434,11 +434,11 @@ public:
 		const Symbol* typeName1 = n->e1->Accept(this).info->GetType()->typeName;
 		const Symbol* typeName2 = n->e2->Accept(this).info->GetType()->typeName;
 		if (typeName1!=getIntern("array of int"))
-			fout << n->line << " - " << "Объект типа " << typeName1->str << 
+			cout << n->line << " - " << "Объект типа " << typeName1->str << 
 														" - ошибочно воспринимается, как целочисленный массив" << endl;
 
 		if (typeName2 != getIntern("int"))
-			fout << n->line << " - " << "Индекс не является интом" << endl;
+			cout << n->line << " - " << "Индекс не является интом" << endl;
 
 		table.info = new Info(new IType(getIntern("int")));
 
@@ -451,7 +451,7 @@ public:
 
 		const Symbol* typeName = n->e1->Accept(this).info->GetType()->typeName;
 		if (typeName != getIntern("array of int"))
-			fout << n->line << " - " << "Нельзя узнать размер у объекта типа " << typeName->str <<endl;
+			cout << n->line << " - " << "Нельзя узнать размер у объекта типа " << typeName->str <<endl;
 
 		table.info = new Info(new IType(getIntern("int")));
 
@@ -479,7 +479,7 @@ public:
 		//fout << "Проверка на существование типа объекта" << endl;
 		if (!TypeIsExisting(typeName))
 		{
-			fout << n->line << " - " << "метод вызывается у объекта неизвестного типа " << typeName->str << endl;
+			cout << n->line << " - " << "метод вызывается у объекта неизвестного типа " << typeName->str << endl;
 			table.info = new Info(new IType(getIntern("unknown")));
 			return table;
 		}
@@ -488,7 +488,7 @@ public:
 		ClassHierarchy* _classHierarchy=cHierarchy.FindDescendant(typeName);
 		if (_classHierarchy == nullptr)
 		{
-			fout << n->line << " - " << "метод вызывается у объекта, не являющегося классом" <<endl;
+			cout << n->line << " - " << "метод вызывается у объекта, не являющегося классом" <<endl;
 			table.info = new Info(new IType(getIntern("unknown")));
 			return table;
 		}
@@ -511,7 +511,7 @@ public:
 		const Info* methodInfo = FindMethodByName(methodsInfo, n->methodName, argsInfo);
 		if (methodInfo == nullptr)
 		{
-			fout << n->line << " - " << "вызывается несуществующий метод "<<n->methodName->str<<
+			cout << n->line << " - " << "вызывается несуществующий метод "<<n->methodName->str<<
 																" класса "<<_classHierarchy->className->str << endl;
 			table.info = new Info(new IType(getIntern("unknown")));
 			return table;
@@ -544,7 +544,7 @@ public:
 
 		if (var == nullptr)
 		{
-			fout << n->line << " - " << "Переменная "<<n->id->str<< " не находится в области видимости" << endl;
+			cout << n->line << " - " << "Переменная "<<n->id->str<< " не находится в области видимости" << endl;
 			table.info = new Info(new IType(getIntern("unknown")));
 			return table;
 		}
@@ -567,7 +567,7 @@ public:
 
 		const Symbol* typeName = n->e1->Accept(this).info->GetType()->typeName;
 		if (typeName != getIntern("int"))
-			fout << n->line << " - " << "Нельзя задать размер массива типом " << typeName->str << endl;
+			cout << n->line << " - " << "Нельзя задать размер массива типом " << typeName->str << endl;
 
 		table.info = new Info(new IType(getIntern("array of int")));
 
@@ -582,13 +582,13 @@ public:
 
 		//Проверка на существование типа
 		if (!TypeIsExisting(n->typName))
-			fout << n->line << " - " << "создаётся объект неизвестного типа " << n->typName->str << endl;
+			cout << n->line << " - " << "создаётся объект неизвестного типа " << n->typName->str << endl;
 		else
 		{
 			//Проверка на существование класса
 			ClassHierarchy* _classHierarchy = cHierarchy.FindDescendant(n->typName);
 			if (_classHierarchy == nullptr)
-				fout << n->line << " - " << "создаётся объект типа " << n->typName->str << ", не являющийся классом" << endl;
+				cout << n->line << " - " << "создаётся объект типа " << n->typName->str << ", не являющийся классом" << endl;
 		}
 
 		table.info = new Info(new IType(n->typName));
@@ -602,7 +602,7 @@ public:
 
 		const Symbol* typeName = n->e1->Accept(this).info->GetType()->typeName;
 		if (typeName != getIntern("bool"))
-			fout << n->line << " - " << "Нельзя построить отрицание на объекте типа " << typeName->str << endl;
+			cout << n->line << " - " << "Нельзя построить отрицание на объекте типа " << typeName->str << endl;
 
 		table.info = new Info(new IType(getIntern("bool")));
 		return table;
@@ -617,7 +617,7 @@ public:
 
 private:
 
-	ofstream fout;//Файловый поток, по которому происходит вывод информации
+	//ofstream cout;//Файловый поток, по которому происходит вывод информации
 
 	const Info* symbolTable;//Таблица всех символов программы
 	const Info* pointInfo;//Указатель на конкретную позицию в таблице символов
