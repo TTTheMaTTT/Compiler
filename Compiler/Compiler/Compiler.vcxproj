@@ -151,6 +151,8 @@
     <ClInclude Include="..\..\Frame.h" />
     <ClInclude Include="..\..\GrammarDeclarations.h" />
     <ClInclude Include="..\..\GrammarDescriptions.h" />
+    <ClInclude Include="..\..\IRTranslate.h" />
+    <ClInclude Include="..\..\IRTree.h" />
     <ClInclude Include="..\..\parser.h" />
     <ClInclude Include="..\..\Printer.h" />
     <ClInclude Include="..\..\Symbol.h" />

@@ -5,30 +5,33 @@
 #include <string>
 #include <memory>
 
-static const int WORD_SIZE = 4;
-static const int MAX_IN_REG = 4;
+namespace X86Sizes
+{
+	static const int WORD_SIZE = 4;
+	static const int MAX_IN_REG = 3;
 
-static const int intSize = 1 * WORD_SIZE;
-static const int shortSize = 1 * WORD_SIZE;
-static const int booleanSize = 1 * WORD_SIZE;
-static const int referenceSize = 1 * WORD_SIZE;
+	static const int intSize = 1 * WORD_SIZE;
+	static const int shortSize = 1 * WORD_SIZE;
+	static const int booleanSize = 1 * WORD_SIZE;
+	static const int referenceSize = 1 * WORD_SIZE;
+}
 
 int typeSize(T_VariableType type) {
 	switch (type) {
 	case VT_Int:
-		return intSize;
+		return X86Sizes::intSize;
 	case VT_Short:
-		return shortSize;
+		return X86Sizes::shortSize;
 	case VT_IntArray:
-		return referenceSize;
+		return X86Sizes::referenceSize;
 	case VT_ShortArray:
-		return referenceSize;
+		return X86Sizes::referenceSize;
 	case VT_Boolean:
-		return booleanSize;
+		return X86Sizes::booleanSize;
 	case VT_UserClass:
-		return referenceSize;
+		return X86Sizes::referenceSize;
 	default:
-		return referenceSize;
+		return X86Sizes::referenceSize;
 	}
 }
 
@@ -54,7 +57,7 @@ public:
 		if ((typ->typeName->str) == "array of short")
 			type = VT_ShortArray;
 
-		IAccess* var = createFormal(RT_Formal, typeSize(type));
+		IAccess* var = createFormal(RT_Formal,type, typeSize(type));
 		formalAccess.insert(make_pair(name, std::unique_ptr<IAccess>(var)));
 		formalList.push_back(var);
 	}
@@ -74,7 +77,7 @@ public:
 		if ((typ->typeName->str) == "array of short")
 			type = VT_ShortArray;
 
-		IAccess* var = createLocal(typeSize(type));
+		IAccess* var = createLocal(typeSize(type),type);
 		localAccess.insert(make_pair(name, std::unique_ptr<IAccess>(var)));
 	}
 
@@ -91,6 +94,19 @@ public:
 		return res->second.get();
 	}
 
+	//Проверка на наличие переменной в фрейме
+	bool CheckLocalOrFormal(const Symbol* name) const
+	{
+		auto res = localAccess.find(name);
+		if (res == localAccess.end()) {
+			res = formalAccess.find(name);
+			if (res == formalAccess.end())
+				return false;
+			return true;
+		}
+		return true;
+	}
+
 	const int FormalSize(int index) const { return formalList[index]->GetSize(); }
 
 	const int FormalSize(const Symbol* name) const {
@@ -98,9 +114,14 @@ public:
 		return res->second->GetSize();
 	}
 
-	const int FP() const { return formalTopPointer; }
+	const int FTP() const { return formalTopPointer; }
 
-	const int LP() const { return localTopPointer; }
+	const int LTP() const { return localTopPointer; }
+
+	const IRTree::Temp FP() const
+	{
+		return fp;
+	}
 
 private:
 	std::vector<IAccess*> formalList;
@@ -108,23 +129,26 @@ private:
 	std::unordered_map<const Symbol*, std::unique_ptr<IAccess>> localAccess;
 	int formalTopPointer = 0;
 	int localTopPointer = 0;
+	IRTree::Temp fp=IRTree::Temp("fp",false);
 
 	//В регистры можем положить 4 аргумента, если их число выше, то кладем их в стек
-	IAccess* createFormal(T_RecordsType type, int size)
+	//Так как мы работаем только с методами классов, значит в каждую функцию первым аргументом передаётся объект класса
+	//А значит первый регистр - его
+	IAccess* createFormal(T_RecordsType type,T_VariableType _varType, int size)
 	{
-		if (formalList.size() < MAX_IN_REG) {
-			return new InRegAccess(type, size, formalList.size());
+		if (formalList.size() < X86Sizes::MAX_IN_REG) {
+			return new InRegAccess(type,_varType, size, formalList.size());
 		}
 		else {
-			IAccess* access = new InFrameAccess(type, size, formalTopPointer, 0);
+			IAccess* access = new InFrameAccess(type, _varType, size, -formalTopPointer-size, 0);
 			formalTopPointer += size;
 			return access;
 		}
 	}
 
-	IAccess* createLocal(int size)
+	IAccess* createLocal(int size, T_VariableType _varType)
 	{
-		IAccess* access = new InFrameAccess(RT_Local, size, localTopPointer, 0);
+		IAccess* access = new InFrameAccess(RT_Local, _varType, size, localTopPointer, 0);
 		localTopPointer += size;
 		return access;
 	}

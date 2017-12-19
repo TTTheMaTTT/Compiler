@@ -254,7 +254,9 @@ Expression:
 	|
 	THISWORD {$$=new ThisExp();}
 	|
-	NEWWORD INTWORD SQOBRACE Expression SQEBRACE {$$=new GetArrayExp($4,yylloc.first_line);}
+	NEWWORD INTWORD SQOBRACE Expression SQEBRACE {$$=new GetArrayExp(new IType(getIntern("int")),$4,yylloc.first_line);}
+	|
+	NEWWORD SHORTWORD SQOBRACE Expression SQEBRACE {$$=new GetArrayExp(new IType(getIntern("short")),$4,yylloc.first_line);}
 	|
 	NEWWORD IDENTIFIER OBRACE EBRACE {$$=new NewObjectExp($2,yylloc.first_line);}
 	|

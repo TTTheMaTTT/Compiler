@@ -1,9 +1,17 @@
 ﻿  source.cpp
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(142): warning C4018: '<': signed/unsigned mismatch
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(210): warning C4018: '<': signed/unsigned mismatch
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(228): warning C4018: '<': signed/unsigned mismatch
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(284): warning C4018: '<': signed/unsigned mismatch
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(302): warning C4018: '<': signed/unsigned mismatch
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(310): warning C4018: '<': signed/unsigned mismatch
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(888): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtree.h(80): warning C4101: 'newOP': unreferenced local variable
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtree.h(429): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(147): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(215): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(233): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(289): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(307): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(315): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(893): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtranslate.h(451): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtranslate.h(1143): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtranslate.h(1049): warning C4715: 'IRTranslator::GetType': not all control paths return a value
+  Skipping... (no relevant changes detected)
+  parser1.cpp
   Compiler.vcxproj -> D:\Chisto Moya Papka!!!\Works\Phystech\Теория компиляторов\Programmes\TypeChecker\Compiler\Debug\Compiler.exe

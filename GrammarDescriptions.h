@@ -597,9 +597,10 @@ public:
 class GetArrayExp : public IExp {
 public:
 
+	const IType* typ;
 	const IExp *e1;
 
-	GetArrayExp(const IExp *_e1, const int _line) :IExp(_line), e1(_e1) {}
+	GetArrayExp(const IType* _typ, const IExp *_e1, const int _line) :typ(_typ),IExp(_line), e1(_e1) {}
 
 	rValue Accept(IVisitor *v) const
 	{

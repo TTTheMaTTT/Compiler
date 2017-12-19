@@ -91,6 +91,11 @@ public:
 
 	TypeChecker(): cHierarchy(getIntern("root")){};
 
+	ClassHierarchy* GetClassHierarchy()
+	{
+		return &cHierarchy;
+	}
+
 	//Задать таблицу символов
 	void SetSymbolTable(const Info* _symbolTable)
 	{

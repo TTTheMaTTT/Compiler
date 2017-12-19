@@ -1,26 +1,67 @@
 Table of Symbols
 {
 
-	MainClass Factorial
+	MainClass QuickSort
 	{
 		String a
 	}
 
-	Class Fac
+	Class QS
 	{
 
 	Variables:
+		array of int number
+		int size
 
 	Methods:
-		int ComputeFac
+		int Start
 		{
 
 
 		Arguments:
-			int num
+			int sz
 
 		Variables:
-			int num_aux
+			int aux01
+		}
+
+		int Sort
+		{
+
+
+		Arguments:
+			int left
+			int right
+
+		Variables:
+			int v
+			int i
+			int j
+			int nt
+			int t
+			bool cont01
+			bool cont02
+			int aux03
+		}
+
+		int Print
+		{
+
+
+		Arguments:
+
+		Variables:
+			int j
+		}
+
+		int Init
+		{
+
+
+		Arguments:
+			int sz
+
+		Variables:
 		}
 
 	}

@@ -1,1 +1,1 @@
-dot -Tpng graph.dot -o tree.png
+dot -Tpng graph.dot -o IRTree.png

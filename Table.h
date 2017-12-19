@@ -1,5 +1,7 @@
 using namespace std;
 
+class ISubtreeWrapper;
+
 extern Symbol* getIntern(const string& src);
 
 //Специальный класс, используемый для сравнения строк
@@ -64,6 +66,12 @@ public:
 
 	//Вернуть фрейм
 	virtual const IFrame* GetFrame() const
+	{
+		return nullptr;
+	}
+
+	//Вернуть фрейм
+	virtual const ISubtreeWrapper* GetTreeWrapper() const
 	{
 		return nullptr;
 	}
@@ -221,7 +229,7 @@ class FrameInfo :public Info
 {
 public:
 
-	FrameInfo(const IFrame* _frame) :frame(_frame),Info(nullptr)
+	FrameInfo(const Symbol* _name, const IFrame* _frame) : frame(_frame), Info(nullptr, _name, {})
 	{
 		infoType = "frame";
 	}
@@ -234,5 +242,31 @@ public:
 
 private:
 	const IFrame* frame;//Информация о фрейме
+
+};
+
+//Информация о IR-поддереве
+class SubtreeWrapperInfo :public Info
+{
+public:
+
+	SubtreeWrapperInfo(const ISubtreeWrapper* _wrapper) : wrapper(_wrapper), Info(nullptr, nullptr, {})
+	{
+		infoType = "IR subtree";
+	}
+
+	SubtreeWrapperInfo(const IType* typ, const ISubtreeWrapper* _wrapper) : wrapper(_wrapper), Info(typ, nullptr, {})
+	{
+		infoType = "IR subtree";
+	}
+
+	//Вернуть враппер IR-поддерева
+	virtual const ISubtreeWrapper* GetTreeWrapper() const
+	{
+		return wrapper;
+	}
+
+private:
+	const ISubtreeWrapper* wrapper;//Информация об IR-поддереве
 
 };

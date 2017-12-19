@@ -60,7 +60,7 @@ public:
 		for (auto var : n->vars)
 			ex->AddLocal(var->typ, var->name);
 
-		table.info = new FrameInfo(ex);
+		table.info = new FrameInfo(n->name,ex);
 
 		return table;
 	}
@@ -199,7 +199,5 @@ public:
 		rValue table;
 		return table;
 	}
-
-private:
 
 };

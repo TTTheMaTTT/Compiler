@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "Symbol.h"
+#include "IRTree.h"
 #include "Access.h"
 #include "Frame.h"
 
@@ -21,6 +22,8 @@ extern Symbol* getIntern(const std::string& src);
 #include "Printer.h"
 #include "TypeChecker.h"
 #include "AR_Visitor.h"
+
+#include "IRTranslate.h"
 
 using namespace std;
 
@@ -60,6 +63,13 @@ int main( int argc, char* argv[] )
 	{
 		ARCreator arCreator;
 		rValue arInformation = arCreator.visit(prog);
+		
+		IRTranslator translator;
+		translator.SetClassHierarchy(tChecker.GetClassHierarchy());
+		translator.SetFrameTable(arInformation.info);
+		translator.SetSymbolTable(symbolTable.info);
+		rValue irTranslateInformation = translator.visit(prog);
+		
 	}
 	system("pause");//Не сразу закрываем консоль
 	return 0;
