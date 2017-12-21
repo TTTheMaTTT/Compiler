@@ -59,7 +59,7 @@ struct ClassHierarchy
 		vector<const Symbol*> reversedAncestors;
 		ClassHierarchy* currentClass = this->parent;
 		reversedAncestors.push_back(className);
-		while (currentClass != nullptr && currentClass->className!=getIntern("root"))
+		while (currentClass != nullptr && currentClass->className != getIntern("root"))
 		{
 			reversedAncestors.push_back(currentClass->className);
 			currentClass = currentClass->parent;
@@ -89,7 +89,7 @@ public:
 
 	int errorCount = 0;
 
-	TypeChecker(): cHierarchy(getIntern("root")){};
+	TypeChecker() : cHierarchy(getIntern("root")) {};
 
 	ClassHierarchy* GetClassHierarchy()
 	{
@@ -107,7 +107,7 @@ public:
 	{
 		rValue r;
 		//cout = ofstream("TypeCheck.txt");
-		
+
 		cout << "Проверка начата" << endl;
 
 		const Info* myInfo = symbolTable;
@@ -115,7 +115,7 @@ public:
 		currentVarTable = new ContainerInfo({});
 		InitializeTypes();//Инициализация списка типов
 		CreateClassHierarchy(symbolTable);//Инициализировать иерархию классов
-		
+
 										  //Создаём связи в иерархии и проверяем их правильность
 		for (auto classDecl : n->classes)
 		{
@@ -124,20 +124,20 @@ public:
 			int hierarchyOutput = CreateHierarchyBond(classDecl->name, classDecl->ext->parentClassName);
 			if (hierarchyOutput == -2)
 			{
-				cout << classDecl->ext->line << " - " << "Неизвестный наследумый класс " << 
-																					classDecl->ext->parentClassName->str << endl;
+				cout << classDecl->ext->line << " - " << "Неизвестный наследумый класс " <<
+					classDecl->ext->parentClassName->str << endl;
 				errorCount++;
 			}
-			else if (hierarchyOutput==-1)
+			else if (hierarchyOutput == -1)
 			{
-				cout << classDecl->ext->line << " - " << "Наследующий класс " <<classDecl->name->str<<
-										" является предком наследуемого класса "<< classDecl->ext->parentClassName->str << endl;
+				cout << classDecl->ext->line << " - " << "Наследующий класс " << classDecl->name->str <<
+					" является предком наследуемого класса " << classDecl->ext->parentClassName->str << endl;
 				errorCount++;
 			}
 		}
 
 		CreateClassTable(symbolTable);//Выделяем из таблицы символов таблицу классов
-		
+
 		ClearSymbolTable();
 		vector<const Info*> classesInfos = myInfo->GetNestedInfo();
 
@@ -148,7 +148,7 @@ public:
 		{
 			ClearSymbolTable();
 			pointInfo = classesInfos[i];
-			n->classes[i-1]->Accept(this);
+			n->classes[i - 1]->Accept(this);
 		}
 
 		ClearSymbolTable();
@@ -185,7 +185,7 @@ public:
 		ClassHierarchy* classInHierarchy = cHierarchy.FindDescendant(myInfo->GetName());
 		if (classInHierarchy == nullptr)
 		{
-			cout << n->line << " - " << "Класс " << n->name->str <<" не попал в иерархию классов! И это странно"<< endl;
+			cout << n->line << " - " << "Класс " << n->name->str << " не попал в иерархию классов! И это странно" << endl;
 			errorCount++;
 		}
 
@@ -203,8 +203,8 @@ public:
 			const IVarDeclaration* var = n->vars[i];
 			if (HaveVar(nestedInfo[i]->GetName()))
 			{
-				cout << var->line << " - " << "переменная " <<var->name->str << 
-											" уже есть в области видимости класса " <<n->name->str<< endl;
+				cout << var->line << " - " << "переменная " << var->name->str <<
+					" уже есть в области видимости класса " << n->name->str << endl;
 				errorCount++;
 			}
 			else
@@ -218,7 +218,7 @@ public:
 			if (HaveMethod(nestedInfo[varSize + i]))
 			{
 				cout << method->line << " - " << "метод " << method->name->str <<
-									" с указанными аргументами уже есть в области видимости класса " << n->name->str << endl;
+					" с указанными аргументами уже есть в области видимости класса " << n->name->str << endl;
 				errorCount++;
 			}
 			else
@@ -315,12 +315,12 @@ public:
 		for (int i = 0; i < n->vars.size(); i++)
 		{
 			//LoadVarTable(savedInfo); - считаем, что область видимости внутри метода не меняется
-			pointInfo = nestedInfo[argSize+i];
+			pointInfo = nestedInfo[argSize + i];
 			n->vars[i]->Accept(this);
 		}
 
 		//Проверка утверждений на наличие ошибок
-		for (const IStatement* state: n->statements)
+		for (const IStatement* state : n->statements)
 		{
 			//LoadVarTable(savedInfo); - считаем, что область видимости внутри метода не меняется
 			state->Accept(this);
@@ -329,8 +329,8 @@ public:
 		if (n->typ->typeName != n->e->Accept(this).info->GetType()->typeName)
 		{
 			errorCount++;
-			cout << n->e->line << " - " << "Тип метода " << n->name->str << 
-									" не соответствует типу его возвращаемого значения" << endl;
+			cout << n->e->line << " - " << "Тип метода " << n->name->str <<
+				" не соответствует типу его возвращаемого значения" << endl;
 		}
 		return table;
 	}
@@ -387,7 +387,7 @@ public:
 
 		//fout << "Я в PrintStatement" << endl;
 		const Symbol* printType = n->e->Accept(this).info->GetType()->typeName;
-		if (printType != getIntern("int") && printType != getIntern("bool") && printType != getIntern("String"))
+		if (printType != getIntern("int") && printType != getIntern("bool") && printType != getIntern("short") && printType != getIntern("String"))
 		{
 			errorCount++;
 			cout << n->e->line << " - " << "Нельзя вывести объект с типом " << printType->str << endl;
@@ -416,7 +416,7 @@ public:
 		}
 		return table;
 	}
-	
+
 	//Переменная должна быть массивом интов, индекс - инт, как и присваиваемое выражение
 	rValue visit(const AssignArrayElementStatement* n)
 	{
@@ -424,7 +424,7 @@ public:
 
 		const Info* assignedVar = FindVarByName(n->varName);
 		const Info* indexInfo = n->index->Accept(this).info;
-		const Info* expInfo = n->e->Accept(this).info; 
+		const Info* expInfo = n->e->Accept(this).info;
 		if (assignedVar == nullptr)
 		{
 			errorCount++;
@@ -432,20 +432,21 @@ public:
 		}
 		else
 		{
-			if (assignedVar->GetType()->typeName != getIntern("array of int"))
+			if (assignedVar->GetType()->typeName != getIntern("array of int") && assignedVar->GetType()->typeName != getIntern("array of short"))
 			{
 				errorCount++;
 				cout << n->line << " - " << "Тип переменной " << n->varName->str << " не целочисленный массив" << endl;
 			}
-			if (indexInfo->GetType()->typeName != getIntern("int"))
+			if (indexInfo->GetType()->typeName != getIntern("int") && indexInfo->GetType()->typeName != getIntern("short"))
 			{
 				errorCount++;
-				cout << n->line << " - " << "Тип индекса не int" << endl;
+				cout << n->line << " - " << "Тип индекса не int или short" << endl;
 			}
-			if (expInfo->GetType()->typeName != getIntern("int"))
+			//Можно присвоить int массиву int'ов а short массиву short'ов или  int'ов
+			if (!((expInfo->GetType()->typeName == getIntern("int") && assignedVar->GetType()->typeName == getIntern("array of int")) || (expInfo->GetType()->typeName == getIntern("short") && (assignedVar->GetType()->typeName == getIntern("array of short") || assignedVar->GetType()->typeName == getIntern("array of int")))))
 			{
 				errorCount++;
-				cout << n->line << " - " << "Тип присваемого значения не int" << endl;
+				cout << n->line << " - " << "Тип присваемого значения не совпадает с типом переменной" << expInfo->GetType()->typeName->str << assignedVar->GetType()->typeName->str << endl;
 			}
 		}
 
@@ -461,12 +462,12 @@ public:
 		const Symbol* typeName2 = n->e2->Accept(this).info->GetType()->typeName;
 		if (static_cast<int>(n->opType) < 4)//совершаем арифметическое действие
 		{
-			if (typeName1 != typeName2 || typeName1 != getIntern("int"))
+			if (typeName1 != typeName2 || !(typeName1 == getIntern("int") || typeName1 == getIntern("short")))
 			{
 				errorCount++;
-				cout << n->line << " - " << "Арифметическое действие производится не над int`ами" << endl;
+				cout << n->line << " - " << "Арифметическое действие производится не над int`ами или short`ами" << endl;
 			}
-			table.info = new Info(new IType(getIntern("int")));
+			table.info = new Info(new IType(typeName1));
 		}
 		else if (static_cast<int>(n->opType) < 6)//And и or
 		{
@@ -479,10 +480,10 @@ public:
 		}
 		else if (static_cast<int>(n->opType) < 8)//<, >
 		{
-			if (typeName1 != typeName2 || typeName1 != getIntern("int"))
+			if (typeName1 != typeName2 || !(typeName1 == getIntern("int") || typeName1 == getIntern("short")))
 			{
 				errorCount++;
-				cout << n->line << " - " << "Сравнение производится не над int`ами" << endl;
+				cout << n->line << " - " << "Сравнение производится не над int`ами или short`ами" << endl;
 			}
 			table.info = new Info(new IType(getIntern("bool")));
 		}
@@ -492,7 +493,7 @@ public:
 			{
 				errorCount++;
 				cout << n->line << " - " << "Проверяется равенство объектов разных типов " <<
-							typeName1->str << " и " << typeName2->str << endl;
+					typeName1->str << " и " << typeName2->str << endl;
 			}
 			table.info = new Info(new IType(getIntern("bool")));
 		}
@@ -504,9 +505,26 @@ public:
 	{
 		rValue table;
 
+		const Symbol* typeName1 = n->e1->Accept(this).info->GetType()->typeName;
+		const Symbol* typeName2 = n->e2->Accept(this).info->GetType()->typeName;
+		const Symbol* typeName3 = n->e3->Accept(this).info->GetType()->typeName;
+
+		if (typeName1 != getIntern("bool"))
+		{
+			errorCount++;
+			cout << n->line << " - " << "Условие составляется не из bool" << endl;
+		}
+		else
+		{
+			if (typeName2 != typeName3 || !(typeName2 == getIntern("int") || typeName2 == getIntern("short") || typeName2 == getIntern("bool")))
+			{
+				errorCount++;
+				cout << " - " << "типы в торого и третьего аргументов не совпадают" << endl;
+			}
+		}
 		//Вставьте код сюда
 
-		table.info = new Info(new IType(getIntern("int")));
+		table.info = new Info(new IType(typeName2));
 		return table;
 	}
 
@@ -516,19 +534,19 @@ public:
 
 		const Symbol* typeName1 = n->e1->Accept(this).info->GetType()->typeName;
 		const Symbol* typeName2 = n->e2->Accept(this).info->GetType()->typeName;
-		if (typeName1 != getIntern("array of int"))
+		if (typeName1 != getIntern("array of int") && typeName1 != getIntern("array of short"))
 		{
 			errorCount++;
 			cout << n->line << " - " << "Объект типа " << typeName1->str <<
-								" - ошибочно воспринимается, как целочисленный массив" << endl;
+				" - ошибочно воспринимается, как целочисленный массив" << endl;
 		}
 
-		if (typeName2 != getIntern("int"))
+		if (typeName2 != getIntern("int") && typeName2 != getIntern("short"))
 		{
 			errorCount++;
-			cout << n->line << " - " << "Индекс не является интом" << endl;
+			cout << n->line << " - " << "Индекс не является целым числом" << endl;
 		}
-		table.info = new Info(new IType(getIntern("int")));
+		table.info = new Info(new IType(typeName2));
 
 		return table;
 	}
@@ -538,12 +556,13 @@ public:
 		rValue table;
 
 		const Symbol* typeName = n->e1->Accept(this).info->GetType()->typeName;
-		if (typeName != getIntern("array of int"))
+		if (typeName != getIntern("array of int") && typeName != getIntern("array of short"))
 		{
 			errorCount++;
 			cout << n->line << " - " << "Нельзя узнать размер у объекта типа " << typeName->str << endl;
 		}
 		table.info = new Info(new IType(getIntern("int")));
+
 
 		return table;
 	}
@@ -557,15 +576,15 @@ public:
 		//fout << "Проверка вызывающего метод объекта" << endl;
 		const Info* objInfo = n->e1->Accept(this).info;
 		//if (objInfo==nullptr)
-			//fout << "Информация об объекте отсутствует " << endl;
+		//fout << "Информация об объекте отсутствует " << endl;
 		const IType* objType = objInfo->GetType();
 		//if (objType == nullptr)
-			//fout << "Информация о типе объекта отсутствует " << endl;
+		//fout << "Информация о типе объекта отсутствует " << endl;
 		const Symbol* typeName = objType->typeName;
 		//if (typeName == nullptr)
-			//fout << "Информация о названии типа объекта отсутствует " << endl;
+		//fout << "Информация о названии типа объекта отсутствует " << endl;
 		//Проверка на существование типа
-		
+
 		//fout << "Проверка на существование типа объекта" << endl;
 		if (!TypeIsExisting(typeName))
 		{
@@ -576,18 +595,18 @@ public:
 		}
 
 		//Проверка на существование класса
-		ClassHierarchy* _classHierarchy=cHierarchy.FindDescendant(typeName);
+		ClassHierarchy* _classHierarchy = cHierarchy.FindDescendant(typeName);
 		if (_classHierarchy == nullptr)
 		{
 			errorCount++;
-			cout << n->line << " - " << "метод вызывается у объекта, не являющегося классом" <<endl;
+			cout << n->line << " - " << "метод вызывается у объекта, не являющегося классом" << endl;
 			table.info = new Info(new IType(getIntern("unknown")));
 			return table;
 		}
 
 		const Info* methodsInfo = GetClassMethods(_classHierarchy);
 		Info* argsInfo = new ContainerInfo({});
-		
+
 		//int i = 0;
 		//fout << "Составляем список аргументов" << endl;
 		for (const IExp* argExp : n->args)
@@ -604,8 +623,8 @@ public:
 		if (methodInfo == nullptr)
 		{
 			errorCount++;
-			cout << n->line << " - " << "вызывается несуществующий метод "<<n->methodName->str<<
-																" класса "<<_classHierarchy->className->str << endl;
+			cout << n->line << " - " << "вызывается несуществующий метод " << n->methodName->str <<
+				" класса " << _classHierarchy->className->str << endl;
 			table.info = new Info(new IType(getIntern("unknown")));
 			return table;
 		}
@@ -638,7 +657,7 @@ public:
 		if (var == nullptr)
 		{
 			errorCount++;
-			cout << n->line << " - " << "Переменная "<<n->id->str<< " не находится в области видимости" << endl;
+			cout << n->line << " - " << "Переменная " << n->id->str << " не находится в области видимости" << endl;
 			table.info = new Info(new IType(getIntern("unknown")));
 			return table;
 		}
@@ -736,14 +755,16 @@ private:
 	vector<const Symbol*> checkedVars;//Список названий переменных, который используется для избежания повторения переменных
 	vector<const Info*> checkedMethods;//Список информаций о методе, который используется для избежания повторения методов
 
-	//Инициализация списка типов
+									   //Инициализация списка типов
 	void InitializeTypes()
 	{
 		programTypes.clear();
 		programTypes.push_back(getIntern("int"));
+		programTypes.push_back(getIntern("short"));
 		programTypes.push_back(getIntern("bool"));
 		programTypes.push_back(getIntern("String"));
 		programTypes.push_back(getIntern("array of int"));
+		programTypes.push_back(getIntern("array of short"));
 		programTypes.push_back(getIntern("unknown"));
 	}
 
@@ -849,7 +870,7 @@ private:
 
 		checkedVars.clear();
 
-		vector<const Symbol*> classesNames =_cHierarchy->GetClassHierarchyLine();//Получить названия всех родительских классов
+		vector<const Symbol*> classesNames = _cHierarchy->GetClassHierarchyLine();//Получить названия всех родительских классов
 		for (const Symbol* className : classesNames)
 		{
 			const Info* cInfo = FindClassInfo(className);
@@ -903,7 +924,7 @@ private:
 	//Сравнить аргументы двух методов
 	bool CompareMethods(const Info* method1, const Info* method2)
 	{
-		return CompareMethodArgs(method1, GetMethodArgs(method2)) && method1->GetName()==method2->GetName();
+		return CompareMethodArgs(method1, GetMethodArgs(method2)) && method1->GetName() == method2->GetName();
 	}
 
 	//Проверить наличие указанного метода в списке checkedMethods
@@ -921,7 +942,7 @@ private:
 		Info* methodsInfo = new ContainerInfo({});
 		checkedMethods.clear();
 
-		vector<const Symbol*> classesNames= _cHierarchy->GetClassHierarchyLine();//Получить названия всех родительских классов
+		vector<const Symbol*> classesNames = _cHierarchy->GetClassHierarchyLine();//Получить названия всех родительских классов
 		for (const Symbol* className : classesNames)
 		{
 			const Info* cInfo = FindClassInfo(className);
@@ -953,7 +974,7 @@ private:
 				continue;//Если мы уже добавили данную переменную, то пропускаем
 
 			checkedVars.push_back(addedVar->GetName());
-			
+
 			//Однако, если данная переменная уже существовала внутри текущей таблицы переменных ещё до всех добавлений,
 			//то перезаписываем информацию
 			bool isOldVar = false;
@@ -988,9 +1009,9 @@ private:
 		{
 			//fout << i<<" " <<_method->GetName()->str<<endl;
 			//if (_method->GetName()==_methodName)
-				//fout << "Имена методов совпадают" << endl;
+			//fout << "Имена методов совпадают" << endl;
 			//if (CompareMethodArgs(_method, methodArgs))
-				//fout << "Аргументы методов совпадают" << endl;
+			//fout << "Аргументы методов совпадают" << endl;
 			if (_method->GetName() == _methodName && CompareMethodArgs(GetMethodArgs(_method), methodArgs))
 				return _method;
 			//i++;

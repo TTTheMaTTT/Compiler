@@ -7,7 +7,7 @@ d:\chisto moya papka!!!\works\phystech\теория компиляторов\pro
 d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(289): warning C4018: '<': signed/unsigned mismatch
 d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(307): warning C4018: '<': signed/unsigned mismatch
 d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(315): warning C4018: '<': signed/unsigned mismatch
-d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(893): warning C4018: '<': signed/unsigned mismatch
+d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\typechecker.h(914): warning C4018: '<': signed/unsigned mismatch
 d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtranslate.h(451): warning C4018: '<': signed/unsigned mismatch
 d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtranslate.h(1143): warning C4018: '<': signed/unsigned mismatch
 d:\chisto moya papka!!!\works\phystech\теория компиляторов\programmes\typechecker\irtranslate.h(1049): warning C4715: 'IRTranslator::GetType': not all control paths return a value

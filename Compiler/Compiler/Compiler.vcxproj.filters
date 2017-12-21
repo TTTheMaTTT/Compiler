@@ -60,6 +60,9 @@
     <ClInclude Include="..\..\IRTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DefineChanger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lexer1.cpp">

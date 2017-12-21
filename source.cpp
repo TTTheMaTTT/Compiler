@@ -12,6 +12,7 @@
 #include "IRTree.h"
 #include "Access.h"
 #include "Frame.h"
+#include "DefineChanger.h"
 
 extern Symbol* getIntern(const std::string& src);
 #include "Table.h"
@@ -49,32 +50,31 @@ int yywrap()
 	return 1;
 }
 
-int main( int argc, char* argv[] )
+int main(int argc, char* argv[])
 {
 	setlocale(LC_ALL, "rus"); // корректное отображение Кириллицы
-	fopen_s( &yyin, argv[1], "r");
+	char* filename1 = "1.txt";
+	char* filename2 = "BinarySearch.txt";
+	changeDefine(filename2, filename1);
+	fopen_s(&yyin, filename1, "r");
 	yyparse();
 	fclose(yyin);
 	p.visit(prog);
-	rValue symbolTable=v.visit(prog);//получаем таблицу символов
+	rValue symbolTable = v.visit(prog);//получаем таблицу символов
 	tChecker.SetSymbolTable(symbolTable.info);
 	rValue typeCheckInfo = tChecker.visit(prog);
 	if (tChecker.errorCount == 0)
 	{
 		ARCreator arCreator;
 		rValue arInformation = arCreator.visit(prog);
-		
+
 		IRTranslator translator;
 		translator.SetClassHierarchy(tChecker.GetClassHierarchy());
 		translator.SetFrameTable(arInformation.info);
 		translator.SetSymbolTable(symbolTable.info);
 		rValue irTranslateInformation = translator.visit(prog);
-		
+
 	}
-
-	Printer p;
-	p.visit(prog);
-
 	system("pause");//Не сразу закрываем консоль
 	return 0;
 }
