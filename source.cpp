@@ -71,6 +71,10 @@ int main( int argc, char* argv[] )
 		rValue irTranslateInformation = translator.visit(prog);
 		
 	}
+
+	Printer p;
+	p.visit(prog);
+
 	system("pause");//Не сразу закрываем консоль
 	return 0;
 }

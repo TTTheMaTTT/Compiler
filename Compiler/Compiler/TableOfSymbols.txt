@@ -1,12 +1,12 @@
 Table of Symbols
 {
 
-	MainClass QuickSort
+	MainClass BinarySearch
 	{
 		String a
 	}
 
-	Class QS
+	Class BS
 	{
 
 	Variables:
@@ -23,25 +23,50 @@ Table of Symbols
 
 		Variables:
 			int aux01
+			int aux02
 		}
 
-		int Sort
+		bool Search
 		{
 
 
 		Arguments:
-			int left
-			int right
+			int num
 
 		Variables:
-			int v
-			int i
-			int j
+			bool bs01
+			int right
+			int left
+			bool var_cont
+			int medium
+			int aux01
 			int nt
-			int t
-			bool cont01
-			bool cont02
+		}
+
+		int Div
+		{
+
+
+		Arguments:
+			int num
+
+		Variables:
+			int count01
+			int count02
 			int aux03
+		}
+
+		bool Compare
+		{
+
+
+		Arguments:
+			int num1
+			int num2
+
+		Variables:
+			bool retval
+			int aux02
 		}
 
 		int Print
@@ -62,6 +87,10 @@ Table of Symbols
 			int sz
 
 		Variables:
+			int j
+			int k
+			int aux02
+			int aux01
 		}
 
 	}
